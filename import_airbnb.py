@@ -141,5 +141,3 @@ for key in df_dic:
     
 # File 'listings_csv_gz.pkl' is saved to disk
 # This file contains the raw
-
-trimmed_listings =pd.read_pickle('listings_csv_gz.pkl')
