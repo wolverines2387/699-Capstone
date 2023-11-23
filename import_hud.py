@@ -58,7 +58,7 @@ def get_lat_lon_samples_from_zip(zip_code, num_samples=5):
 
 hud_df['LatLonSamples'] = hud_df['code'].progress_apply(lambda x: get_lat_lon_samples_from_zip(x, num_samples=5)) 
 
-# Write to a CSV file
-file_path = 'hud_lat_lon_multiple.csv'
+# Write to a Pickle file
+file_path = 'hud_lat_lon_multiple.pkl'
 
-hud_df.to_csv(file_path, index=False)
+hud_df.to_pickle(file_path)
