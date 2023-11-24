@@ -109,9 +109,9 @@ for file, city in zip(files,list_of_cities):
         'tpct_ownsfd'  : 'mean'
     }).reset_index()
     
-    hud_neighborhoods_df_exploded['city'] = city
+    hud_neighborhoods_df_agg['city'] = city
     
-    exploded_df_list.append(hud_neighborhoods_df_exploded)
+    exploded_df_list.append(hud_neighborhoods_df_agg)
     
 agg_neighborhoods_df = pd.concat(exploded_df_list)
 
