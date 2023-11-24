@@ -127,7 +127,7 @@ poverty_level_min = agg_neighborhoods_df_city['tpoverty'].min()
 hover_text = address
 
 # Loctation Hover Tet
-for _, row in hud_df.iterrows():
+for _, row in agg_neighborhoods_df_city.iterrows():
     for column in row.index:
         hover_text += f"<br>{column}: {row[column]}"
 

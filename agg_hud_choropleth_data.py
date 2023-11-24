@@ -115,7 +115,7 @@ for file, city in zip(files,list_of_cities):
     
 agg_neighborhoods_df = pd.concat(exploded_df_list)
 
-write_file_path = os.path.join(new_dir, 'agg_neighborhood_df.csv')
+write_file_path = os.path.join(new_dir, 'agg_neighborhood_df.pkl')
 
     # Write the DataFrame to a CSV file
 agg_neighborhoods_df.to_pickle(write_file_path)
