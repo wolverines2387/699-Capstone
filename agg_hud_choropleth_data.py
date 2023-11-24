@@ -22,13 +22,13 @@ if not os.path.exists(new_dir):
 
 # Get choropleth_data
 def list_files(directory):
-    return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+    return sorted([f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f)) and f != '.DS_Store'])
 
-# Usage
 files = list_files('choropleth_data')
 
+
 ## Check order of this:
-list_of_cities = ['columbus',
+list_of_cities = sorted(['columbus',
                   'los-angeles',
                   'new-york-city',
                   'fort-worth', 
@@ -38,14 +38,17 @@ list_of_cities = ['columbus',
                   'austin',
                   'seattle', 
                   'rochester',
-                  'san-francisco']
+                  'san-francisco'])
+
+exploded_df_list = []
 
 for file, city in zip(files,list_of_cities):
-    hud_neighborhoods_df = pd.read_csv(file)
+    hud_neighborhoods_df = pd.read_pickle('Cchoropleth_data/'+file)
 
     hud_neighborhoods_df_exploded = hud_neighborhoods_df.explode('neighborhood')
     hud_neighborhoods_df_exploded = hud_neighborhoods_df_exploded.reset_index(drop=True)
     hud_neighborhoods_df_exploded = hud_neighborhoods_df_exploded[hud_neighborhoods_df_exploded['neighborhood'].notna()]
+    
     
     hud_neighborhoods_df_agg = hud_neighborhoods_df_exploded.groupby('neighborhood').agg({
         'total_units': 'sum',
@@ -105,9 +108,15 @@ for file, city in zip(files,list_of_cities):
         'tminority'  : 'mean',
         'tpct_ownsfd'  : 'mean'
     }).reset_index()
+    
+    hud_neighborhoods_df_exploded['city'] = city
+    
+    exploded_df_list.append(hud_neighborhoods_df_exploded)
+    
+agg_neighborhoods_df = pd.concat(exploded_df_list)
 
-   file_path = os.path.join(new_dir, city + 'agg_neighborhood_df.csv')
+write_file_path = os.path.join(new_dir, 'agg_neighborhood_df.csv')
 
     # Write the DataFrame to a CSV file
-    hud_neighborhoods_df_agg.to_csv(file_path, index=False)
+agg_neighborhoods_df.to_pickle(write_file_path)
    
