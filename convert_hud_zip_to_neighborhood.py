@@ -16,19 +16,17 @@ import random
 import os
 
 # Import Lat Lon Hud DF
-file_path = 'hud_lat_lon_multiple.pkl'
-hud_df = pd.read_pickle(file_path)
+read_file_path = 'hud_lat_lon_multiple.pkl'
+hud_df = pd.read_pickle(read_file_path)
 
 
 # Function to convert zip codes to neighborhoods
 def get_df_all_neighborhood(geojson_file, dataframe):
-    
-    
     gdf = gpd.read_file(geojson_file)
 
     neighborhoods = []
 
-    for coordinates_list in  tqdm(dataframe['LatLonSamples']):
+    for coordinates_list in tqdm(dataframe['LatLonSamples']):
         coordinate_list = []
 
         for lat, lon in coordinates_list:
@@ -39,10 +37,15 @@ def get_df_all_neighborhood(geojson_file, dataframe):
                 neighborhood_name = row['neighbourhood']
                 neighborhood_geometry = row['geometry']
 
-                if neighborhood_geometry.contains(point):
-                    coordinate_list.append(neighborhood_name)
-                    found = True
-                    break
+                try:
+                    if neighborhood_geometry.contains(point):
+                        coordinate_list.append(neighborhood_name)
+                        found = True
+                        break
+                except Exception as e:
+                    print(f"Error at point {point}: {e}. Inserting np.nan...")
+                    coordinate_list.append(np.nan)
+                    continue
 
             if not found:
                 coordinate_list.append(None)
@@ -52,6 +55,7 @@ def get_df_all_neighborhood(geojson_file, dataframe):
     dataframe['neighborhood'] = neighborhoods
     
     return dataframe
+
 
 # Get list of geojsons
 def list_files(directory):
@@ -80,7 +84,7 @@ if not os.path.exists(new_dir):
 # Write dataframes with neighborhoods to folders
 for file, file_name in tqdm(zip(files,list_of_cities)):
     hud_neighborhoods_df = get_df_all_neighborhood('Chicago_Data/geo-jsons/'+file, hud_df)
-    file_path = os.path.join(new_dir, file_name + 'neighborhood_df.csv')
+    write_file_path = os.path.join(new_dir, file_name + 'neighborhood_df.pkl')
 
-    # Write the DataFrame to a CSV file
-    hud_neighborhoods_df.to_csv(file_path, index=False)
+    # Write the DataFrame to a PKL file
+    hud_neighborhoods_df.to_pickle(write_file_path)
