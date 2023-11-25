@@ -13,3 +13,19 @@ stages:
       md5: c0be23d113f75d2a5a03c164e9e4eb6f.dir
       size: 98771393
       nfiles: 11
+  import_hud:
+    cmd: python import_hud.py Zipcode_2022_2020census.xlsx hud_lat_lon_multiple.pkl
+    deps:
+    - path: Zipcode_2022_2020census.xlsx
+      hash: md5
+      md5: 815c693294f678fb710561849998e4df
+      size: 22445089
+    - path: import_hud.py
+      hash: md5
+      md5: 91145ed1cdec5234bae5d380a3c45d0f
+      size: 1696
+    outs:
+    - path: hud_lat_lon_multiple.pkl
+      hash: md5
+      md5: 6a21bd576567d26fffe20b6658303e4d
+      size: 53073157
