@@ -29,3 +29,43 @@ stages:
       hash: md5
       md5: 6a21bd576567d26fffe20b6658303e4d
       size: 53073157
+  convert_hud_to_zip_to_neighborhood:
+    cmd: python convert_hud_zip_to_neighborhood.py hud_lat_lon_multiple.pkl geo-jsons
+      choropleth_data
+    deps:
+    - path: convert_hud_zip_to_neighborhood.py
+      hash: md5
+      md5: 52822434f5ba307003aca13890f5634c
+      size: 2719
+    - path: geo-jsons
+      hash: md5
+      md5: ee29652fd69aa9d425d3dca9e59e5b76.dir
+      size: 6953210
+      nfiles: 11
+    - path: hud_lat_lon_multiple.pkl
+      hash: md5
+      md5: 6a21bd576567d26fffe20b6658303e4d
+      size: 53073157
+    outs:
+    - path: choropleth_data
+      hash: md5
+      md5: a1de87900c1b6a9b9938f8a57cf61613.dir
+      size: 611975537
+      nfiles: 11
+  agg_hud_choropleth_data:
+    cmd: python agg_hud_choropleth_data.py chropleth_data agg_choropleth_data/agg_neighborhood_df.pkl
+    deps:
+    - path: agg_hud_choropleth_data.py
+      hash: md5
+      md5: 4e4bb4199765b17d64cec4826fa61e31
+      size: 3934
+    - path: choropleth_data
+      hash: md5
+      md5: a1de87900c1b6a9b9938f8a57cf61613.dir
+      size: 611975537
+      nfiles: 11
+    outs:
+    - path: agg_choropleth_data/agg_neighborhood_df.pkl
+      hash: md5
+      md5: abfda215ae0bdc31265cb550cd0036ce
+      size: 346649
