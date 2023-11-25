@@ -1,0 +1,26 @@
+stages:
+  import_airbnb:
+    cmd: python import_airbnb.py data
+    deps:
+    - import_airbnb.py
+    outs:
+    - data
+  import_hud:
+    cmd: python Zipcode_2022_2020census.xlsx hud_lat_lon_multiple.pkl
+    deps:
+    - Zipcode_2022_2020census.xlsx
+    outs:
+    - hud_lat_lon_multiple.pkl
+  convert_hud_to_zip_to_neighborhood:
+    cmd: python hud_lat_lon_multiple.pkl geo-jsons choropleth_data
+    deps:
+    - geo-jsons
+    - hud_lat_lon_multiple.pkl
+    outs:
+    - choropleth_data
+  agg_hud_choropleth_data:
+    cmd: python chropleth_data agg_choropleth_data/agg_neighborhood_df.pkl
+    deps:
+    - choropleeth_data
+    outs:
+    - agg_choropleth_data/agg_neighborhood_df.pkl

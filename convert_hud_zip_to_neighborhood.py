@@ -83,7 +83,7 @@ if not os.path.exists(new_dir):
 
 # Write dataframes with neighborhoods to folders
 for file, file_name in tqdm(zip(files,list_of_cities)):
-    hud_neighborhoods_df = get_df_all_neighborhood('Chicago_Data/geo-jsons/'+file, hud_df)
+    hud_neighborhoods_df = get_df_all_neighborhood('geo-jsons/'+file, hud_df)
     write_file_path = os.path.join(new_dir, file_name + 'neighborhood_df.pkl')
 
     # Write the DataFrame to a PKL file
