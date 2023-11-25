@@ -1,29 +1,3 @@
-stages:
-  import_airbnb:
-    cmd: python import_airbnb.py data
-    deps:
-    - import_airbnb.py
-    outs:
-    - data
-  import_hud:
-    cmd: python import_hud.py Zipcode_2022_2020census.xlsx hud_lat_lon_multiple.pkl
-    deps:
-    - import_hud.py
-    - Zipcode_2022_2020census.xlsx
-    outs:
-    - hud_lat_lon_multiple.pkl
-  convert_hud_to_zip_to_neighborhood:
-    cmd: python convert_hud_zip_to_neighborhood.py hud_lat_lon_multiple.pkl geo-jsons choropleth_data
-    deps:
-    - convert_hud_zip_to_neighborhood.py
-    - geo-jsons
-    - hud_lat_lon_multiple.pkl
-    outs:
-    - choropleth_data
-  agg_hud_choropleth_data:
-    cmd: python agg_hud_choropleth_data.py chropleth_data agg_choropleth_data/agg_neighborhood_df.pkl
-    deps:
-    - agg_hud_choropleth_data.py
-    - choropleth_data
-    outs:
-    - agg_choropleth_data/agg_neighborhood_df.pkl
+version https://git-lfs.github.com/spec/v1
+oid sha256:f34601f94180e34f4ef8e7029d74198cbd6d84e641829fec7c7d9b1e491b3046
+size 845
