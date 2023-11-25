@@ -1,5 +1,4 @@
 import pandas as pd
-import altair as alt
 import numpy as np
 import json
 import math
@@ -13,6 +12,8 @@ from shapely.geometry import Polygon, Point
 from tqdm import tqdm
 import pgeocode
 import random
+
+tqdm.pandas()
 
 ## Import HUD
 hud_df = pd.read_excel("Zipcode_2022_2020census.xlsx")

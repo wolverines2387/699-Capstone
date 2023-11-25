@@ -43,7 +43,7 @@ list_of_cities = sorted(['columbus',
 exploded_df_list = []
 
 for file, city in zip(files,list_of_cities):
-    hud_neighborhoods_df = pd.read_pickle('Cchoropleth_data/'+file)
+    hud_neighborhoods_df = pd.read_pickle('choropleth_data/'+file)
 
     hud_neighborhoods_df_exploded = hud_neighborhoods_df.explode('neighborhood')
     hud_neighborhoods_df_exploded = hud_neighborhoods_df_exploded.reset_index(drop=True)
