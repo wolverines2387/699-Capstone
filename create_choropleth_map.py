@@ -163,3 +163,4 @@ fig.add_trace(go.Scattermapbox(
 ))
 
 #Do I need a way to export this?
+fig.save('choropleth_map.html')

@@ -137,4 +137,4 @@ points_layered = (points + model_results_line + your_property_marker)
 final_chart = y_ticks | points_layered & x_ticks
 
 ##push to json....Do we need this?
-chart_json = final_chart.to_json()
+final_chart.save('model_results_graph.html')

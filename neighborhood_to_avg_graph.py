@@ -166,11 +166,8 @@ chart = chart.configure_view(stroke='transparent', fill='white').configure_title
     titleColor='darkgrey'
 )
 
-
-chart.display()
-
 # How do I send this to the portal?
-
+chart.save('neighborhood_to_avg.html')
 
 
 
