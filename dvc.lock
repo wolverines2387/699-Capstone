@@ -1,0 +1,15 @@
+schema: '2.0'
+stages:
+  import_airbnb:
+    cmd: python import_airbnb.py data
+    deps:
+    - path: import_airbnb.py
+      hash: md5
+      md5: b22d89a14a2f39ceea64c0db460b1f0b
+      size: 4643
+    outs:
+    - path: data
+      hash: md5
+      md5: c0be23d113f75d2a5a03c164e9e4eb6f.dir
+      size: 98771393
+      nfiles: 11

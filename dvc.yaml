@@ -6,8 +6,9 @@ stages:
     outs:
     - data
   import_hud:
-    cmd: python Zipcode_2022_2020census.xlsx hud_lat_lon_multiple.pkl
+    cmd: python import_hud.py Zipcode_2022_2020census.xlsx hud_lat_lon_multiple.pkl
     deps:
+    - import_hud.py
     - Zipcode_2022_2020census.xlsx
     outs:
     - hud_lat_lon_multiple.pkl
