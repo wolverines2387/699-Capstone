@@ -533,13 +533,13 @@ def plot_state():
 ## functions end here, title, sidebar setting and descriptions start here
 t1, t2 = st.columns(2)
 with t1:
-    st.markdown('Short-term Rental Pricing Predictor')
+    st.markdown('*Short-term Rental Pricing Predictor*')
 
 with t2:
     st.write("")
     st.write("")
     st.write("""
-    Prediction data provided by InsideAirbnb | Neighborhood level data provided by Department of Housing and Urban Development
+    *Prediction data provided by InsideAirbnb* | *Neighborhood level data provided by Department of Housing and Urban Development*
     """)
 
 st.write("")
