@@ -15,7 +15,7 @@ import pgeocode
 import random
 import os
 
-# Import Lat Lon Hud DF
+# Import Lat Lon Hud DF from pkl
 read_file_path = 'hud_lat_lon_multiple.pkl'
 hud_df = pd.read_pickle(read_file_path)
 

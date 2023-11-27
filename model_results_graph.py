@@ -3,6 +3,8 @@ import pandas as pd
 from scipy import stats
 import altair as alt
 
+#Set city and cutoff values
+
 city = 'boston'
 city_neighborhood = 'East Boston'
 price_cutoff_upper = 700
