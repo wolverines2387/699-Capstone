@@ -92,7 +92,9 @@ columns_to_drop =[
     'host_about', 
     'neighborhood_overview', 
     'name', 
-    'description'
+    'description',
+    'amenities', 
+    'host_verifications'
 ]
 
 # drop rows where bathrooms text, bedrooms or beds are null
@@ -148,8 +150,8 @@ def count_lists(series):
 
 
 # Count Items in list:
-for field in ['amenities', 'host_verifications']:
-    df[field] = count_lists(df[field])
+#for field in ['amenities', 'host_verifications']:
+#    df[field] = count_lists(df[field])
 
 
 ##---------------------    
