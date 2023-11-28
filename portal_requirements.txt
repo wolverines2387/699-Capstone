@@ -4,3 +4,5 @@ seaborn
 datetime
 streamlit
 numpy
+geopandas
+tqdm
