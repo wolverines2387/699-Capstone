@@ -1,26 +1,16 @@
 import pandas as pd
 import os
-import seaborn as sns
-import matplotlib.pyplot as plt
+#import seaborn as sns
+#import matplotlib.pyplot as plt
 import numpy as np
 import re
 import warnings
 warnings.filterwarnings('ignore')
 
+list_of_cities = sorted(['columbus', 'los-angeles', 'new-york-city', 'fort-worth', 'boston', 'broward-county','chicago','austin','seattle','rochester','san-francisco'])
+
 # recover listints from pickle (create df)
 listings_csv_gz = pd.DataFrame()
-
-list_of_cities = sorted(['columbus',
-                  'los-angeles',
-                  'new-york-city',
-                  'fort-worth', 
-                  'boston',
-                  'broward-county',
-                  'chicago',
-                  'austin',
-                  'seattle', 
-                  'rochester',
-                  'san-francisco'])
 
 for city in list_of_cities:
     file_path = os.path.join('data', city, 'listings.csv.gz')
@@ -78,10 +68,8 @@ columns_to_drop =[
                     ]
 
 # Also Trim columns with no reviews to remove inactive properties
-trimmed_listings = listings_csv_gz.drop(columns= columns_to_drop
-                            ).dropna(subset=[
-                                               'first_review'], 
-                                        how='all', inplace=False)
+#trimmed_listings = listings_csv_gz.drop(columns= columns_to_drop).dropna(subset=['first_review'],how='all', inplace=False)
+trimmed_listings = listings_csv_gz.drop(columns=columns_to_drop, errors='ignore').dropna(subset=['first_review'], how='all', inplace=False)
 
 
 # Drop Additional Columns
@@ -145,9 +133,9 @@ def get_string_lengths(series):
     return lengths
 
 # Get lenght of the text field:    
-for field in ['host_about', 'neighborhood_overview', 'name', 'description']:
-    df[field] = get_string_lengths(df[field])
-    df[field] = df[field].fillna(0)
+##for field in ['host_about', 'neighborhood_overview', 'name', 'description']:
+##    df[field] = get_string_lengths(df[field])
+##    df[field] = df[field].fillna(0)
     
 ##---------------------    
 
@@ -156,8 +144,8 @@ def count_lists(series):
 
 
 # Count Items in list:
-for field in ['amenities', 'host_verifications']:
-    df[field] = count_lists(df[field])
+##for field in ['amenities', 'host_verifications']:
+##    df[field] = count_lists(df[field])
 
 
 ##---------------------    
