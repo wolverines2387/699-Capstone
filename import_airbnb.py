@@ -1,7 +1,7 @@
 import pandas as pd
 import os
-import seaborn as sns
-import matplotlib.pyplot as plt
+#import seaborn as sns
+#import matplotlib.pyplot as plt
 import numpy as np
 import re
 import warnings
@@ -37,7 +37,7 @@ def GetData(url, list_of_cities, list_of_files):
     processed_links = []
 
     # Check if the pickle file with lisnks exist
-    if not os.path.isfile('processed_links.pkl'):
+    if not os.path.isfile('processed_links_new.pkl'):
         # If the file does not exist, create an empty list and save it to the file
         with open('processed_links.pkl', 'wb') as file:
             pickle.dump(processed_links, file)
