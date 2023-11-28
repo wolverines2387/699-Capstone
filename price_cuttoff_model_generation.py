@@ -2,7 +2,7 @@ import pandas as pd
 import os
 import psycopg2
 from sqlalchemy import create_engine, inspect
-import seaborn as sns
+#import seaborn as sns
 import matplotlib.pyplot as plt
 
 import re
