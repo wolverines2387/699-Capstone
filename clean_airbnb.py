@@ -74,21 +74,25 @@ trimmed_listings = listings_csv_gz.drop(columns=columns_to_drop, errors='ignore'
 
 # Drop Additional Columns
 columns_to_drop =[
-                  'host_response_time', 
-                  'host_response_rate', 
-                  'host_acceptance_rate', 
-                  'last_review', 
-                  'first_review',
-                  'minimum_minimum_nights',
-                  'maximum_minimum_nights', 
-                  'minimum_maximum_nights',                      
-                  'maximum_maximum_nights',                    
-                  'minimum_nights_avg_ntm',                   
-                  'maximum_nights_avg_ntm',
+    'host_response_time',
+    'host_response_rate',
+    'host_acceptance_rate',
+    'last_review',
+    'first_review',
+    'minimum_minimum_nights',
+    'maximum_minimum_nights',
+    'minimum_maximum_nights',
+    'maximum_maximum_nights',
+    'minimum_nights_avg_ntm',
+    'maximum_nights_avg_ntm',
     'calculated_host_listings_count',                
     'calculated_host_listings_count_entire_homes' ,  
     'calculated_host_listings_count_private_rooms',
-    'calculated_host_listings_count_shared_rooms'
+    'calculated_host_listings_count_shared_rooms',
+    'host_about', 
+    'neighborhood_overview', 
+    'name', 
+    'description'
 ]
 
 # drop rows where bathrooms text, bedrooms or beds are null
@@ -144,8 +148,8 @@ def count_lists(series):
 
 
 # Count Items in list:
-##for field in ['amenities', 'host_verifications']:
-##    df[field] = count_lists(df[field])
+for field in ['amenities', 'host_verifications']:
+    df[field] = count_lists(df[field])
 
 
 ##---------------------    
