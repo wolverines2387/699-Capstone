@@ -6,3 +6,5 @@ streamlit
 numpy
 geopandas
 tqdm
+turfpy
+pgeocode
