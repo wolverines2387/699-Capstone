@@ -114,7 +114,7 @@ sampling_base = list(set(trimmed_listings.columns)-set(keep))
 
 used_lists = []
 c=0
-while c<20000:
+while c<50000:
     c_list = random.sample(sampling_base, random.randint(7, len(sampling_base)))
     if c_list not in used_lists:
         used_lists.append(c_list)
@@ -125,7 +125,7 @@ combined_results = pd.DataFrame()
 all_cols = df_encoded.columns
 selected_models = ['Ridge']
 
-for l in tqdm.tqdm_notebook(used_lists):
+for l in tqdm.tqdm(used_lists):
     cols = list(set(all_cols)  - set(l))
     df = df_encoded[cols]
     results = model_grid_search(df, selected_models = selected_models, test_size = 0.9, cv = 2)   
