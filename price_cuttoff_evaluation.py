@@ -109,7 +109,7 @@ combined_results = pd.DataFrame()
 
 for cv in cvs:
     for test_size in test_sizes:
-        results = model_grid_search(encoded_listings(trimmed_listings[trimmed_listings.price<1000]), 
+        results = model_grid_search(encoded_listings(trimmed_listings[trimmed_listings.price<700]), 
                                     selected_models=selected_models, test_size = test_size , cv = cv)
         results['cv'] = cv
         results['test_size'] = test_size
