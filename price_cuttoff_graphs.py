@@ -25,7 +25,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 import numpy as np
 
 ## Get Cuttoff Models from outlier_directory
-df_cutoff = pd.read_pickle(outlier_dir +'/full_results.pkl')
+df_cutoff = pd.read_pickle('outlier_analysis' +'/full_results.pkl')
 
 # Get unique model names
 models = list(df_cutoff.index.unique())
@@ -48,7 +48,7 @@ for model in models:
 # Add legend and show plot
 plt.legend()
 plt.grid(True)
-plt.save('r_squared_vs_cutoff.html.html')
+plt.savefig('r_squared_vs_cutoff.html.html')
 
 ## RMSE vs Cutoff
 # Set up the plot
@@ -65,4 +65,4 @@ for model in models:
 # Add legend and show plot
 plt.legend()
 plt.grid(True)
-plt.save('rmse_vs_cutoff.html.html')
+plt.savefig('rmse_vs_cutoff.html.html')
