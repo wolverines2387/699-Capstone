@@ -48,7 +48,7 @@ for model in models:
 # Add legend and show plot
 plt.legend()
 plt.grid(True)
-plt.savefig('r_squared_vs_cutoff.html.pdf')
+plt.savefig('r_squared_vs_cutoff.pdf')
 
 ## RMSE vs Cutoff
 # Set up the plot
@@ -65,4 +65,4 @@ for model in models:
 # Add legend and show plot
 plt.legend()
 plt.grid(True)
-plt.savefig('rmse_vs_cutoff.html.pdf')
+plt.savefig('rmse_vs_cutoff.pdf')
