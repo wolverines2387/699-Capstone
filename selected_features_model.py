@@ -139,6 +139,6 @@ for l in tqdm.tqdm(used_lists):
 
 df_encoded = encoded_listings(trimmed_listings[trimmed_listings.price<1000])
 df_encoded_selected = df_encoded.drop(columns=['host_has_profile_pic', 'latitude', 
-                                               'longitude', 'neighborhood_overview'])
+                                               'longitude'])
 
 df_encoded_selected.to_pickle('encoded_selected.pkl')
