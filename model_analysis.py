@@ -34,8 +34,8 @@ models.remove('Linear Regression')
 
 cvs = combined_results['cv'].unique()  # Get unique CV values
 
-image_names = ['r2_vs_test_size_cv_2.html', 'r2_vs_test_size_cv_5.html', 
-               'r2_vs_test_size_cv_10.html', 'r2_vs_test_size_cv_20.html']
+image_names = ['r2_vs_test_size_cv_2.pdf', 'r2_vs_test_size_cv_5.pdf', 
+               'r2_vs_test_size_cv_10.pdf', 'r2_vs_test_size_cv_20.pdf']
 
 model_analysis_dir = 'outlier_analysis'
 if not os.path.exists(model_analysis_dir):
@@ -59,4 +59,4 @@ for cv, image_name in zip(cvs,image_names):
     plt.grid(True)
 
     # Show the plot for the current CV value
-    plt.save(model_analysis_dir+'/'+image_name)
+    plt.savefig(model_analysis_dir+'/'+image_name)
