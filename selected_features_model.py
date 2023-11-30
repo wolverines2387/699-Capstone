@@ -127,7 +127,7 @@ for cv in cvs:
 combined_results = pd.DataFrame()
 all_cols = df_encoded.columns
 
-for l in tqdm.tqdm_notebook(used_lists):
+for l in tqdm.tqdm(used_lists):
     cols = list(set(all_cols)  - set(l))
     df = df_encoded[cols]
     results = model_grid_search(df ,selected_models=selected_models, 
