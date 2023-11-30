@@ -186,4 +186,4 @@ for learning_rate, group in grouped:
     learning_rate_dfs[learning_rate] = fig
 
 
-plt.savefig(model_tuning_analysis+'/tune_graphs.pdf')
+plt.savefig(tune_dir+'/tune_graphs.pdf')
