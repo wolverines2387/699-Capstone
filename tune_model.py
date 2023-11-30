@@ -154,7 +154,7 @@ df = df_encoded_selected.copy()
 results = run_lgbm_regression(df, [ 50, 200, 1000, 2000, 5000, 10000, 15000, 20000], 
                               [0.01,0.1,1], target_col='price')
 
-results.to_pickle(model_tuning_analysis+'/LightGBM_estimators_Grid_Search_1.pkl')
+results.to_pickle(tune_dir+'/LightGBM_estimators_Grid_Search_1.pkl')
 
 df=results
 
@@ -186,4 +186,4 @@ for learning_rate, group in grouped:
     learning_rate_dfs[learning_rate] = fig
 
 
-plt.save(model_tuning_analysis+'/tune_graphs.html')
+plt.savefig(model_tuning_analysis+'/tune_graphs.pdf')
