@@ -17,3 +17,4 @@ re
 os
 psycopg2
 sqlalchemy
+openpyxl

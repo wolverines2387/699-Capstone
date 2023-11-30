@@ -2,7 +2,7 @@ import json
 from datetime import date
 from urllib.request import urlopen
 import time
-
+import os 
 import altair as alt
 import numpy as np
 import pandas as pd
@@ -34,7 +34,7 @@ sidebar_selection = st.sidebar.radio(
      'chicago', 'austin', 'seattle', 'rochester', 'san-francisco'],
 )
 
-###Figure out where to place this:
+###Figure out where to place this: ##################################################################################
 def get_neighborhoods(directory):
     cities = [name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))]
     city_dir = {}
@@ -54,12 +54,13 @@ neighborhoods = get_neighborhoods(directory)
 #################################################################
 
 @st.cache(ttl=3*60*60, suppress_st_warning=True)
-def get_data():
-    US_confirmed = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv'
-    US_deaths = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv'
-    confirmed = pd.read_csv(US_confirmed)
-    deaths = pd.read_csv(US_deaths)
-    return confirmed, deaths
+#def get_data():
+#    US_confirmed = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv'
+#    US_deaths = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv'
+#    confirmed = pd.read_csv(US_confirmed)
+#    deaths = pd.read_csv(US_deaths)
+#    return confirmed, deaths
+
 
 confirmed, deaths = get_data()
 FIPSs = confirmed.groupby(['Province_State', 'Admin2']).FIPS.unique().apply(pd.Series).reset_index()
@@ -190,34 +191,32 @@ def get_testing_data(County):
 #### Our graphs before I comment all this other stuff out....
 
 def choropleth(city, neighborhood):
-    
-    #Get GeoJson File and format
-    geo_json_file_path = city_file_path = os.path.join('geojson_data', city,'neighbourhoods.geojson')
+    # Get GeoJson File and format
+    geo_json_file_path = city_file_path = os.path.join('geojson_data', city, 'neighbourhoods.geojson')
     geo_json = json.load(open(geo_json_file_path))
-    
-    #Get HUD Data
-    read_path = 'Chicago_Data/agg_choropleth_data/hud_neighborhoods_agg.pkl' ###CHANGE THIS IN PERM CODE!
 
+    # Get HUD Data
+    read_path = 'Chicago_Data/agg_choropleth_data/hud_neighborhoods_agg.pkl'  # CHANGE THIS IN PERM CODE!
     agg_neighborhoods_df = pd.read_pickle(read_path)
 
     agg_neighborhoods_df_city = agg_neighborhoods_df[agg_neighborhoods_df.city == city]
-    agg_neighborhoods_df_city.rename(columns={'total_units': 'Affordable Units Available', 'pct_occupied': 
-                                              '% Affordable Units Occupied', 'rent_per_month': 'Avg Rent Per Month', 
-                                              'pct_lt50_median':'% Very Low Income', 'tpoverty':'% In Poverty'}, 
-                                            inplace=True)
-    
-    #Get Lat Lons for City Center
+    agg_neighborhoods_df_city.rename(columns={'total_units': 'Affordable Units Available', 'pct_occupied':
+                                              '% Affordable Units Occupied', 'rent_per_month': 'Avg Rent Per Month',
+                                              'pct_lt50_median': '% Very Low Income', 'tpoverty': '% In Poverty'},
+                                     inplace=True)
+
+    # Get Lat Lons for City Center
     list_of_cities_lat_lon = sorted([('columbus', 39.9612, -82.9988),
-                  ('los-angeles', 34.0549, -118.2426),
-                  ('new-york-city', 40.7128, -74.0060),
-                  ('fort-worth', 32.7555, -97.3308),
-                  ('boston',42.3601,-71.0589),
-                  ('broward-county', 26.1224, -80.1373),
-                  ('chicago', 41.8781, -87.6232),
-                  ('austin', 30.2672, -97.7431),
-                  ('seattle', 47.6061, -122.3328),
-                  ('rochester', 43.1566, -77.6088),
-                  ('san-francisco', 37.7749, -122.4194)])
+                                      ('los-angeles', 34.0549, -118.2426),
+                                      ('new-york-city', 40.7128, -74.0060),
+                                      ('fort-worth', 32.7555, -97.3308),
+                                      ('boston', 42.3601, -71.0589),
+                                      ('broward-county', 26.1224, -80.1373),
+                                      ('chicago', 41.8781, -87.6232),
+                                      ('austin', 30.2672, -97.7431),
+                                      ('seattle', 47.6061, -122.3328),
+                                      ('rochester', 43.1566, -77.6088),
+                                      ('san-francisco', 37.7749, -122.4194)])
 
     # Initialize the variable to None
     matching_lat_lon = None
@@ -233,17 +232,17 @@ def choropleth(city, neighborhood):
     city_center_lat_lons = matching_tuple
     city_center_lat = city_center_lat_lons[1]
     city_center_lon = city_center_lat_lons[2]
-    
+
     # Selected neighborhood
     pin_point_df = pd.read_pickle('pin_point_coordinates.pkl')
-    neigh_val = pin_point_df.coordinates[(pin_point_df['city'] == city) & (pin_point_df['neighborhood'] == neighborhood)]
+    neigh_val = pin_point_df.coordinates[
+        (pin_point_df['city'] == city) & (pin_point_df['neighborhood'] == neighborhood)]
     neigh_lat_lons = neigh_val.values
 
-    
     ## Generate Figure
     hover_text = neighborhood
 
-    # Loctation Hover Tet
+    # Location Hover Text
     for _, row in agg_neighborhoods_df_city.iterrows():
         for column in row.index:
             hover_text += f"<br>{column}: {row[column]}"
@@ -260,27 +259,29 @@ def choropleth(city, neighborhood):
                                zoom=9, center={"lat": city_center_lat, "lon": city_center_lon},
                                opacity=0.7,
                                hover_name='% Affordable Units Occupied',
-                               hover_data=['Affordable Units Available', '% Affordable Units Occupied', 'Avg Rent Per Month', 
-                                           '% Very Low Income','% In Poverty'],  
+                               hover_data=['Affordable Units Available', '% Affordable Units Occupied',
+                                           'Avg Rent Per Month',
+                                           '% Very Low Income', '% In Poverty'],
                                title='Neighborhood Affordability Data'
-                              )
+                               )
 
     fig.update_layout(dragmode=False)
 
     # Property Address Marker
     fig.add_trace(go.Scattermapbox(
-        lat=[neigh_lat_lons[0][0]],  
-        lon=[neigh_lat_lons[0][1]],  
+        lat=[neigh_lat_lons[0][0]],
+        lon=[neigh_lat_lons[0][1]],
         mode='markers',
         marker=go.scattermapbox.Marker(
-            size=10,  
-            color='green', 
+            size=10,
+            color='green',
         ),
-        text=[hover_text], 
+        text=[hover_text],
         hoverinfo='text'
     ))
-    
-    return fig.show()
+
+    # Use st.plotly_chart to display the figure in Streamlit
+    st.plotly_chart(fig)
 
 def get_neighborhood_to_avg(city, city_neighborhood):
     read_path = 'Chicago_Data/agg_choropleth_data/hud_neighborhoods_agg.csv'
@@ -420,9 +421,11 @@ def get_neighborhood_to_avg(city, city_neighborhood):
         labelColor='darkgrey',
         titleColor='darkgrey'
     )
+    # Convert Altair chart to JSON format
+    chart_json = chart.to_json()
 
-
-    return chart.display()
+    # Display Altair chart in Streamlit
+    st.altair_chart(chart_json)
 
 
 ######################################################################################
