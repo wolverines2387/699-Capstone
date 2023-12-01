@@ -22,19 +22,6 @@ if _ENABLE_PROFILING:
 
 today = date.today()
 
-st.set_page_config(
-    page_title="Short-term Rental Pricing Predictor",
-    layout='wide',
-    initial_sidebar_state='auto',
-)
-
-sidebar_selection = st.sidebar.selectbox(
-    'Select city:',
-    ['columbus','los-angeles', 'new-york-city','fort-worth', 'boston', 'broward-county',
-     'chicago', 'austin', 'seattle', 'rochester', 'san-francisco'],
-)
-
-###Figure out where to place this: ##################################################################################
 def get_neighborhoods(directory):
     cities = [name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))]
     city_dir = {}
@@ -50,6 +37,26 @@ def get_neighborhoods(directory):
 
 directory = 'data'
 neighborhoods = get_neighborhoods(directory)
+
+st.set_page_config(
+    page_title="Short-term Rental Pricing Predictor",
+    layout='wide',
+    initial_sidebar_state='auto',
+)
+
+sidebar_city = st.sidebar.selectbox(
+    'Select city:',
+    ['columbus','los-angeles', 'new-york-city','fort-worth', 'boston', 'broward-county',
+     'chicago', 'austin', 'seattle', 'rochester', 'san-francisco'],
+)
+
+sidebar_neighborhood = st.sidebar.selectbox(
+    'Select neighborhood:',
+    neighborhoods[sidebar_city],
+)
+
+###Figure out where to place this: ##################################################################################
+
 
 #################################################################
 
@@ -815,7 +822,7 @@ For additional information please contact *ryanwt@umich.edu* or *moura@umich.edu
 """)
 
 
-if sidebar_selection == 'Select Neighborhoods':
+if sidebar_city == 'Select Neighborhoods':
     st.markdown('## Select neighborhoods of interest')
     CA_counties = confirmed[confirmed.Province_State == 'California'].Admin2.unique().tolist()
     counties = st.multiselect('', CA_counties, default=['Yolo', 'Solano', 'Sacramento'])
@@ -832,7 +839,7 @@ if sidebar_selection == 'Select Neighborhoods':
             st.write('')
             with st.expander(f"Expand for {c} County Details"):
                 plot_county([c])
-elif sidebar_selection == 'California':
+elif sidebar_city == 'California':
     plot_state()
 
 with st.sidebar.expander("Click to learn more about this dashboard"):
