@@ -28,8 +28,8 @@ st.set_page_config(
     initial_sidebar_state='auto',
 )
 
-sidebar_selection = st.sidebar.radio(
-    'Select data:',
+sidebar_selection = st.sidebar.selectbox(
+    'Select city:',
     ['columbus','los-angeles', 'new-york-city','fort-worth', 'boston', 'broward-county',
      'chicago', 'austin', 'seattle', 'rochester', 'san-francisco'],
 )
@@ -53,13 +53,13 @@ neighborhoods = get_neighborhoods(directory)
 
 #################################################################
 
-@st.cache(ttl=3*60*60, suppress_st_warning=True)
-#def get_data():
-#    US_confirmed = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv'
-#    US_deaths = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv'
-#    confirmed = pd.read_csv(US_confirmed)
-#    deaths = pd.read_csv(US_deaths)
-#    return confirmed, deaths
+@st.cache_data(ttl=3*60*60)
+def get_data():
+    US_confirmed = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv'
+    US_deaths = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv'
+    confirmed = pd.read_csv(US_confirmed)
+    deaths = pd.read_csv(US_deaths)
+    return confirmed, deaths
 
 
 confirmed, deaths = get_data()
@@ -68,7 +68,7 @@ FIPSs.columns = ['State', 'County', 'FIPS']
 FIPSs['FIPS'].fillna(0, inplace = True)
 FIPSs['FIPS'] = FIPSs.FIPS.astype(int).astype(str).str.zfill(5)
 
-@st.cache(ttl=3*60*60, suppress_st_warning=True)
+@st.cache_data(ttl=3*60*60)
 def get_testing_data(County):
     apiKey = '9fe19182c5bf4d1bb105da08e593a578'
     if len(County) == 1:
@@ -837,28 +837,9 @@ elif sidebar_selection == 'California':
 
 with st.sidebar.expander("Click to learn more about this dashboard"):
     st.markdown(f"""
-    One of the key metrics for which data are widely available is the estimate of **daily new cases per 100,000
-    population**.
-
-    Here, in following graphics, we will track:
-
-    (A) Estimates of daily new cases per 100,000 population (averaged over the last seven days)  
-    
-    (B) Daily incidence (new cases)  
-    
-    (C) Cumulative cases and deaths  
-    
-    (D) Daily new tests*  
-
-    Data source: Data for cases are procured automatically from **COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University**.  
-    
-    The data is updated at least once a day or sometimes twice a day in the [COVID-19 Data Repository](https://github.com/CSSEGISandData/COVID-19).  
-
-    Infection rate, positive test rate, ICU headroom and contacts traced from https://covidactnow.org/.  
-
-    *Calculation of % positive tests depends on consistent reporting of county-wise total number of tests performed routinely. Rolling averages and proportions are not calculated if reporting is inconsistent over a period of 14 days.  
-
-    *Report updated on {str(today)}.*  
+    Using data from Inside Airbnb as well as the US Department of Housing and Urban Development, we've compiled a dasbhoard to help potential investors and renters find the ideal marketplace listing price, as well as gain a deeper understanding of the affordable rental market and constraints that disadvantaged indivduals face. 
+                
+    Our belief is that constraint of available units will be further tightened by pressure for short-term rentals. 
     """)
 
 if _ENABLE_PROFILING:
