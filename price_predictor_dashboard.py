@@ -320,6 +320,7 @@ For additional information please contact *ryanwt@umich.edu* or *moura@umich.edu
 """)
 
 
+
 if sidebar_city == 'Select Neighborhoods':
     st.markdown('## Select neighborhoods of interest')
     CA_counties = confirmed[confirmed.Province_State == 'California'].Admin2.unique().tolist()
@@ -347,7 +348,61 @@ with st.sidebar.expander("Click to learn more about this dashboard"):
     Our belief is that constraint of available units will be further tightened by pressure for short-term rentals. 
     """)
 
-# Your existing code...
+# Add container for input widgets
+st.markdown("## Input Widget Container")
+
+# 'host_is_superhost'
+host_is_superhost = st.checkbox("Is Superhost?")
+# 'host_listings_count'
+host_listings_count = st.number_input("Host Listings Count", min_value=0)
+# 'host_total_listings_count'
+host_total_listings_count = st.number_input("Host Total Listings Count", min_value=0)
+# 'host_identity_verified'
+host_identity_verified = st.checkbox("Host Identity Verified?")
+# 'accommodates'
+accommodates = st.number_input("Accommodates", min_value=0)
+# 'bathrooms_text'
+bathrooms_text = st.number_input("Bathrooms Text", min_value=0)
+# 'bedrooms'
+bedrooms = st.number_input("Bedrooms", min_value=0)
+# 'beds'
+beds = st.number_input("Beds", min_value=0)
+# 'minimum_nights'
+minimum_nights = st.number_input("Minimum Nights", min_value=0)
+# 'maximum_nights'
+maximum_nights = st.number_input("Maximum Nights", min_value=0)
+# 'number_of_reviews'
+number_of_reviews = st.number_input("Number of Reviews", min_value=0)
+# 'number_of_reviews_ltm'
+number_of_reviews_ltm = st.number_input("Number of Reviews LTM", min_value=0)
+# 'number_of_reviews_l30d'
+number_of_reviews_l30d = st.number_input("Number of Reviews L30D", min_value=0)
+# 'review_scores_rating'
+review_scores_rating = st.number_input("Review Scores Rating", min_value=0, max_value=100)
+# 'review_scores_accuracy'
+review_scores_accuracy = st.number_input("Review Scores Accuracy", min_value=0, max_value=10)
+# 'review_scores_cleanliness'
+review_scores_cleanliness = st.number_input("Review Scores Cleanliness", min_value=0, max_value=10)
+# 'review_scores_checkin'
+review_scores_checkin = st.number_input("Review Scores Checkin", min_value=0, max_value=10)
+# 'review_scores_communication'
+review_scores_communication = st.number_input("Review Scores Communication", min_value=0, max_value=10)
+# 'review_scores_location'
+review_scores_location = st.number_input("Review Scores Location", min_value=0, max_value=10)
+# 'review_scores_value'
+review_scores_value = st.number_input("Review Scores Value", min_value=0, max_value=10)
+# 'instant_bookable'
+instant_bookable = st.checkbox("Instant Bookable?")
+# 'reviews_per_month'
+reviews_per_month = st.number_input("Reviews Per Month", min_value=0)
+# 'age'
+age = st.number_input("Age", min_value=0)
+# room_type
+room_type_options = ['Entire home/apt', 'Private room', 'Shared room']
+room_type = st.selectbox("Room Type", room_type_options)
+# ‘property_type
+property_type_options = ['Apartment', 'House', 'Condo', 'Other']
+property_type = st.selectbox("Property Type", property_type_options)
 
 # Create tabs
 tabs = st.tabs(["Choropleth", "Neighborhood Stats"])
