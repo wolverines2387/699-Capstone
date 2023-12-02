@@ -26,6 +26,7 @@ today = date.today()
 column_df = pd.read_pickle('encoded_selected.pkl')
 column_df.drop(columns = ['price'], inplace=True)
 column_lst = column_df.columns.tolist()
+loaded_model = joblib.load('prod_model.pkl')
 
 def get_neighborhoods(directory):
     #cities = [name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))]
@@ -588,6 +589,9 @@ submit_df.loc[0, 'reviews_per_month'] = reviews_per_month
 submit_df.loc[0, 'age'] = age
 submit_df = update_room_type_submission(submit_df, room_type, room_type_options)
 submit_df = update_property_type_submission(submit_df, property_type, property_type_options)
+
+predictions = loaded_model.predict(submit_df)
+prediction_val = round(predictions[0],2)
 
 # Create tabs
 tabs = st.tabs(["Choropleth", "Neighborhood Stats"])
