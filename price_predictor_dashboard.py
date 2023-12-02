@@ -9,6 +9,7 @@ import pandas as pd
 import requests
 import streamlit as st
 import streamlit.components.v1 as components
+import joblib
 ## No longer need this with this version of python
 #from pandas.io.json import json_normalize
 
@@ -27,7 +28,9 @@ column_df.drop(columns = ['price'], inplace=True)
 column_lst = column_df.columns.tolist()
 
 def get_neighborhoods(directory):
-    cities = [name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))]
+    #cities = [name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))]
+    cities = ['columbus','los-angeles', 'new-york-city','fort-worth', 'boston', 'broward-county',
+     'chicago', 'seattle', 'rochester', 'san-francisco']
     city_dir = {}
     
     for city in cities:
@@ -95,6 +98,126 @@ st.set_page_config(
 )
 
 #################################################################
+#Insert values into the submit df
+def update_property_type_submission(submit_df, selected_property_type, property_type_values):
+    header = "property_type_"
+    
+    un_selected_property_type_values = property_type_values.copy()
+    
+    un_selected_property_type_values.remove(selected_property_type)
+    
+    #Insert dummy for selected property type
+    #selected_property_type_word_list = selected_property_type.split()
+    
+    selected_property_column = header+selected_property_type
+    
+    #selected_property_column = header + '_' + selected_property_type_word
+    
+    submit_df.loc[0, selected_property_column] = 1
+    
+    #Insert dummy for unselected property types
+    
+    for unselected_property_type in un_selected_property_type_values:
+        #unselected_property_type_word_list = unselected_property_type.split()
+    
+
+        unselected_property_column = header + unselected_property_type
+
+        submit_df.loc[0, unselected_property_column] = 0
+        
+    return submit_df
+        
+def update_city_submission(submit_df, sidebar_city):
+    header = "city_"
+    
+    city_list = ['columbus','los-angeles', 'new-york-city','fort-worth', 'boston', 'broward-county',
+     'chicago', 'seattle', 'rochester', 'san-francisco']
+    
+    un_selected_city_values = city_list.copy()
+    
+    un_selected_city_values.remove(sidebar_city)
+    
+    #Insert dummy for selected property type
+    
+    selected_city_column = header + sidebar_city
+    
+    submit_df.loc[0, selected_city_column] = 1
+    
+    #Insert dummy for unselected property types
+    
+    for unselected_city in un_selected_city_values:
+
+        unselected_city_column = header + unselected_city
+
+        submit_df.loc[0, unselected_city_column] = 0
+        
+    return submit_df
+
+def update_neighborhood_submission(submit_df, sidebar_neighborhood, directory):
+    neighborhoods = get_neighborhoods(directory)
+    
+    header = "neighbourhood_cleansed_"
+    
+    neighborhood_list = []
+    
+    city_list = ['columbus','los-angeles', 'new-york-city','fort-worth', 'boston', 'broward-county',
+     'chicago','seattle', 'rochester', 'san-francisco']
+    
+    for city in city_list:
+        neighborhood_list = neighborhood_list + neighborhoods[city]
+    
+    un_selected_neighborhoods = neighborhood_list.copy()
+    
+    un_selected_neighborhoods.remove(sidebar_neighborhood)
+    
+    #Insert dummy for selected property type
+    
+    selected_neighborhood_column = header + sidebar_neighborhood
+    
+    submit_df.loc[0, selected_neighborhood_column] = 1
+    
+    #Insert dummy for unselected property types
+    
+    for un_selected_neighborhood in un_selected_neighborhoods:
+        un_selected_neighborhood = str(un_selected_neighborhood)
+        unselected_neighborhood_column = header + un_selected_neighborhood
+
+        submit_df.loc[0, unselected_neighborhood_column] = 0
+        
+    return submit_df.iloc[:, :-11]
+
+def update_room_type_submission(submit_df, selected_room_type, room_type_values):
+    header = "room_type_"
+    
+    if selected_room_type == 'N/A':
+        submit_df.loc[0, 'room_type_Hotel room'] = 0
+        submit_df.loc[0, 'room_type_Private room'] = 0
+    
+    else:
+    
+        un_selected_room_type_values = room_type_values.copy()
+
+        un_selected_room_type_values.remove(selected_room_type)
+        un_selected_room_type_values.remove("N/A")
+
+        #Insert dummy for selected property type
+
+        selected_room_column = header + selected_room_type
+
+        submit_df.loc[0, selected_room_column] = 1
+
+        #Insert dummy for unselected property types
+
+        for unselected_room_type in un_selected_room_type_values:
+
+            unselected_room_column = header + unselected_room_type
+
+            submit_df.loc[0, unselected_room_column] = 0
+        
+    return submit_df
+
+
+##################################################################
 
 def choropleth(city, neighborhood):
     # Get GeoJson File and format
@@ -435,6 +558,36 @@ property_type_options = property_values_for_dropdown(property_type_columns)
 property_type = st.sidebar.selectbox("Property Type", property_type_options)
 
 regenerate_button = st.sidebar.button("Regenerate Graphs")
+
+#Create DF inputs to Model
+submit_df = pd.DataFrame(columns=column_lst)
+submit_df = update_city_submission(submit_df, sidebar_city)
+submit_df = update_neighborhood_submission(submit_df, sidebar_neighborhood, directory)
+submit_df.loc[0, 'host_is_superhost'] = host_is_superhost
+submit_df.loc[0, 'host_listings_count'] = host_listings_count
+submit_df.loc[0, 'host_total_listings_count'] = host_total_listings_count
+submit_df.loc[0, 'host_identity_verified'] = host_identity_verified
+submit_df.loc[0, 'accommodates'] = accommodates
+submit_df.loc[0, 'bathrooms_text'] = host_identity_verified
+submit_df.loc[0, 'bedrooms'] = bedrooms
+submit_df.loc[0, 'beds'] = beds
+submit_df.loc[0, 'minimum_nights'] = minimum_nights
+submit_df.loc[0, 'maximum_nights'] = maximum_nights
+submit_df.loc[0, 'number_of_reviews'] = number_of_reviews
+submit_df.loc[0, 'number_of_reviews_ltm'] = number_of_reviews_ltm
+submit_df.loc[0, 'number_of_reviews_l30d'] = number_of_reviews_l30d
+submit_df.loc[0, 'review_scores_rating'] = review_scores_rating
+submit_df.loc[0, 'review_scores_accuracy'] = review_scores_accuracy
+submit_df.loc[0, 'review_scores_cleanliness'] = review_scores_cleanliness
+submit_df.loc[0, 'review_scores_checkin'] = review_scores_checkin
+submit_df.loc[0, 'review_scores_communication'] = review_scores_communication
+submit_df.loc[0, 'review_scores_location'] = review_scores_location
+submit_df.loc[0, 'review_scores_value'] = review_scores_value
+submit_df.loc[0, 'instant_bookable'] = instant_bookable
+submit_df.loc[0, 'reviews_per_month'] = reviews_per_month
+submit_df.loc[0, 'age'] = age
+submit_df = update_room_type_submission(submit_df, room_type, room_type_options)
+submit_df = update_property_type_submission(submit_df, property_type, property_type_options)
 
 # Create tabs
 tabs = st.tabs(["Choropleth", "Neighborhood Stats"])
