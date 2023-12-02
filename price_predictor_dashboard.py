@@ -592,6 +592,9 @@ submit_df = update_property_type_submission(submit_df, property_type, property_t
 submit_df = submit_df.apply(pd.to_numeric, errors='ignore')
 predictions = loaded_model.predict(submit_df)
 prediction_val = round(predictions[0],2)
+text_prediciton_val = "Your estimated nightly rental value is $"+str(prediction_val)
+
+model_value_text = st.header(body = text_prediciton_val, divider = 'orange')
 
 # Create tabs
 tabs = st.tabs(["Choropleth", "Neighborhood Stats"])
