@@ -92,6 +92,26 @@ def room_values_for_dropdown(room_list):
     
     return type_list
 
+def transform_listing_data(df):
+    columns_to_keep = ['neighborhood_overview', 'neighbourhood', 'neighbourhood_cleansed',
+                   'neighbourhood_group_cleansed', 'bedrooms', 'price', 'bathrooms_text', 'instant_bookable']
+
+    df = df[columns_to_keep].copy()
+    df.loc[:, 'price'] = (df['price'].replace( '[\$,)]','', regex=True ).replace( '[(]','-',   regex=True ).astype(float))
+    df.loc[:, "bathroom_qty"] = df["bathrooms_text"].str.split(" ", expand=True)[0]
+    
+    return df
+
+def filter_neighborhood(df, neighborhood, price_cutoff_upper, price_cutoff_lower):
+    
+    rslt_df = df[df['neighbourhood_cleansed'].isin(neighborhood)] 
+    rslt_df = rslt_df[['neighbourhood_cleansed', 'bedrooms', 'price', 'bathroom_qty', 'instant_bookable']]
+    rslt_df = rslt_df[rslt_df['price'] <= price_cutoff_upper]
+    rslt_df = rslt_df[rslt_df['price'] >= price_cutoff_lower]  
+    rslt_df = rslt_df.dropna().reset_index(drop=True)
+    
+    return rslt_df
+
 st.set_page_config(
     page_title="Short-term Rental Pricing Predictor",
     layout='wide',
@@ -219,6 +239,103 @@ def update_room_type_submission(submit_df, selected_room_type, room_type_values)
 
 
 ##################################################################
+
+def model_results_graph(model, dataframe, city, neighborhood, model_value, model_bedrooms, instant_bookable):
+    
+    model_value = round(model_value,0)
+    if instant_bookable == 1:
+        instant_bookable = 't'
+    elif instant_bookable == 0:
+        instant_bookable = 'f'
+    
+    #Transform and filter listing data
+    graph_listing_df = pd.read_csv('data/'+ city +'/listings.csv.gz')#update this for data/city values
+    transformed_graph_listing_df = transform_listing_data(graph_listing_df)
+    filtered_graph_listing_df = filter_neighborhood(transformed_graph_listing_df, [neighborhood], 1000, 40)
+    
+    #Get Model Values
+    bedroom_count = [1,2,3,4,5,6]
+    price_trend = []
+    
+    for bedroom in bedroom_count:
+        dataframe_copy = dataframe.copy()
+        dataframe_copy.loc[0, 'bedrooms'] = bedroom
+        
+        dataframe_copy = dataframe_copy.apply(pd.to_numeric, errors='ignore')
+        
+        chart_prediction = model.predict(dataframe_copy)
+        chart_prediction = chart_prediction[0]
+        chart_prediction = np.round(chart_prediction,0)
+        
+        price_trend.append(chart_prediction)
+        
+    trend_data = {'price': price_trend, 'bedrooms': bedroom_count, 
+            'neighbourhood_cleansed': [neighborhood,neighborhood,neighborhood,neighborhood,neighborhood,neighborhood],
+            'instant_bookable': [instant_bookable,instant_bookable,instant_bookable,instant_bookable,instant_bookable,instant_bookable]
+           }
+    trend_model_range = pd.DataFrame.from_dict(trend_data)
+    
+    trend_model_results = pd.DataFrame(columns=['price', 'bedrooms', 'neighbourhood_cleansed', 'instant_bookable'])
+    trend_model_results.loc[0, 'price'] = model_value
+    trend_model_results.loc[0, 'bedrooms'] = model_bedrooms
+    trend_model_results.loc[0, 'neighbourhood_cleansed'] = neighborhood
+    trend_model_results.loc[0, 'instant_bookable'] = instant_bookable
+    
+    ############################################################
+    # Chart creation
+    
+    # Configure the options common to all layers
+    brush = alt.selection_interval()
+    base = alt.Chart(filtered_graph_listing_df).add_params(brush)
+
+    points = base.mark_point().encode(
+        x=alt.X('bedrooms', title='Bedrooms'),
+        y=alt.Y('price', title='Price', scale=alt.Scale(domain=[0, 1000])),  # adjust the domain values as needed
+        color=alt.condition(brush, 'instant_bookable', alt.value('grey')),
+        size=alt.Size('bathroom_qty')
+    ).properties(
+        title='Model Results to Neighborhood Prices',
+        width=600,  # Double the width
+        height=600
+    )
+
+    # Configure the ticks
+    tick_axis = alt.Axis(labels=False, domain=False, ticks=False)
+
+    x_ticks = base.mark_tick().encode(
+        alt.X('bedrooms', axis=tick_axis),
+        alt.Y('instant_bookable', title='', axis=tick_axis),
+        color=alt.condition(brush, 'instant_bookable', alt.value('lightgrey'))
+    ).properties(
+            width=600
+    )
+
+    y_ticks = base.mark_tick().encode(
+        alt.X('instant_bookable', title='', axis=tick_axis),
+        alt.Y('price', axis=tick_axis),
+        color=alt.condition(brush, 'instant_bookable', alt.value('lightgrey'))
+    ).properties(
+            height=600
+    )
+
+    model_results_line = alt.Chart(trend_model_range).mark_line(color='red').encode(
+        x='bedrooms:Q',
+        y=alt.Y('price', scale=alt.Scale(domain=[0, 1000]))  # adjust the domain values as needed
+    )
+
+    your_property_marker = alt.Chart(trend_model_results).mark_point(color='green', shape="cross", filled=True, size=500).encode(
+        x='bedrooms:Q',
+        y=alt.Y('price', scale=alt.Scale(domain=[0, 1000])),  # adjust the domain values as needed
+        tooltip=['price', 'bedrooms', 'neighbourhood_cleansed', 'instant_bookable']
+    )
+
+    points_layered = (points + model_results_line + your_property_marker)
+
+    final_chart = y_ticks | points_layered & x_ticks
+
+    st.altair_chart(final_chart)
+
+
 
 def choropleth(city, neighborhood):
     # Get GeoJson File and format
@@ -597,25 +714,33 @@ text_prediciton_val = "Your estimated nightly rental value is $"+str(prediction_
 model_value_text = st.header(body = text_prediciton_val, divider = 'orange')
 
 # Create tabs
-tabs = st.tabs(["Choropleth", "Neighborhood Stats"])
+selected_tab = st.radio("Select a tab", ["Model Results", "Choropleth", "Neighborhood Stats"])
 
 # Check if the "Regenerate Graphs" button is clicked
 if regenerate_button:
     # Check which tab is selected
-    if tabs == "Choropleth":
+    if selected_tab == "Model Results":
+        # Display the model results graph
+        model_results_graph(loaded_model, submit_df, sidebar_city, sidebar_neighborhood, prediction_val, bedrooms, instant_bookable)
+    elif selected_tab == "Choropleth":
         # Display the choropleth graph
         choropleth(sidebar_city, sidebar_neighborhood)
-    elif tabs == "Neighborhood Stats":
+    elif selected_tab == "Neighborhood Stats":
         # Display the neighborhood stats graph
         get_neighborhood_to_avg(sidebar_city, sidebar_neighborhood)
 
 # Check which tab is selected (outside the "if regenerate_button" block)
-if tabs == "Choropleth":
+if selected_tab == "Model Results":
+    # Display the model results graph
+    model_results_graph(loaded_model, submit_df, sidebar_city, sidebar_neighborhood, prediction_val, bedrooms, instant_bookable)
+elif selected_tab == "Choropleth":
     # Display the choropleth graph
     choropleth(sidebar_city, sidebar_neighborhood)
-elif tabs == "Neighborhood Stats":
+elif selected_tab == "Neighborhood Stats":
     # Display the neighborhood stats graph
     get_neighborhood_to_avg(sidebar_city, sidebar_neighborhood)
+
+
 
 
 if _ENABLE_PROFILING:
