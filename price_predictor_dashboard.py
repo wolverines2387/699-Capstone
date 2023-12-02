@@ -205,7 +205,7 @@ def update_room_type_submission(submit_df, selected_room_type, room_type_values)
 
         selected_room_column = header + selected_room_type
 
-        submit_df.loc[0, selected_room_column] = 1
+        submit_df.loc[0, selected_room_column] = int(1)
 
         #Insert dummy for unselected property types
 
@@ -213,7 +213,7 @@ def update_room_type_submission(submit_df, selected_room_type, room_type_values)
 
             unselected_room_column = header + unselected_room_type
 
-            submit_df.loc[0, unselected_room_column] = 0
+            submit_df.loc[0, unselected_room_column] = int(0)
         
     return submit_df
 
@@ -462,7 +462,7 @@ def get_neighborhood_to_avg(city, city_neighborhood):
 ## functions end here, title, sidebar setting and descriptions start here
 t1, t2 = st.columns(2)
 with t1:
-    st.markdown('*Short-term Rental Pricing Predictor*')
+    st.title('Short-term Rental Pricing Predictor')
 
 with t2:
     st.write("")
@@ -589,7 +589,7 @@ submit_df.loc[0, 'reviews_per_month'] = reviews_per_month
 submit_df.loc[0, 'age'] = age
 submit_df = update_room_type_submission(submit_df, room_type, room_type_options)
 submit_df = update_property_type_submission(submit_df, property_type, property_type_options)
-
+submit_df = submit_df.apply(pd.to_numeric, errors='ignore')
 predictions = loaded_model.predict(submit_df)
 prediction_val = round(predictions[0],2)
 
