@@ -434,20 +434,29 @@ room_type = st.sidebar.selectbox("Room Type", room_type_options)
 property_type_options = property_values_for_dropdown(property_type_columns)
 property_type = st.sidebar.selectbox("Property Type", property_type_options)
 
-# Your existing code...
-
-
+regenerate_button = st.sidebar.button("Regenerate Graphs")
 
 # Create tabs
 tabs = st.tabs(["Choropleth", "Neighborhood Stats"])
 
-# Check which tab is selected
+# Check if the "Regenerate Graphs" button is clicked
+if regenerate_button:
+    # Check which tab is selected
+    if tabs == "Choropleth":
+        # Display the choropleth graph
+        choropleth(sidebar_city, sidebar_neighborhood)
+    elif tabs == "Neighborhood Stats":
+        # Display the neighborhood stats graph
+        get_neighborhood_to_avg(sidebar_city, sidebar_neighborhood)
+
+# Check which tab is selected (outside the "if regenerate_button" block)
 if tabs == "Choropleth":
     # Display the choropleth graph
     choropleth(sidebar_city, sidebar_neighborhood)
 elif tabs == "Neighborhood Stats":
     # Display the neighborhood stats graph
     get_neighborhood_to_avg(sidebar_city, sidebar_neighborhood)
+
 
 if _ENABLE_PROFILING:
     pr.disable()
