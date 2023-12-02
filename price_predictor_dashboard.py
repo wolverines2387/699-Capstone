@@ -44,18 +44,6 @@ st.set_page_config(
     initial_sidebar_state='auto',
 )
 
-sidebar_city = st.sidebar.selectbox(
-    'Select city:',
-    ['columbus','los-angeles', 'new-york-city','fort-worth', 'boston', 'broward-county',
-     'chicago', 'austin', 'seattle', 'rochester', 'san-francisco'],
-)
-
-sidebar_neighborhood = st.sidebar.selectbox(
-    'Select neighborhood:',
-    neighborhoods[sidebar_city],
-)
-
-
 #################################################################
 
 def choropleth(city, neighborhood):
@@ -321,88 +309,84 @@ For additional information please contact *ryanwt@umich.edu* or *moura@umich.edu
 
 
 
-if sidebar_city == 'Select Neighborhoods':
-    st.markdown('## Select neighborhoods of interest')
-    CA_counties = confirmed[confirmed.Province_State == 'California'].Admin2.unique().tolist()
-    counties = st.multiselect('', CA_counties, default=['Yolo', 'Solano', 'Sacramento'])
-    # Limit to the first 5 counties.
-    counties = counties[:5]
-    if not counties:
-        # If no counties are specified, just plot the state.
-        st.markdown('> No counties were selected, falling back to showing statistics for California state.')
-        plot_state()
-    else:
-        # Plot the aggregate and per-county details.
-        plot_county(counties)
-        for c in counties:
-            st.write('')
-            with st.expander(f"Expand for {c} County Details"):
-                plot_county([c])
-elif sidebar_city == 'California':
-    plot_state()
 
-with st.sidebar.expander("Click to learn more about this dashboard"):
-    st.markdown(f"""
-    Using data from Inside Airbnb as well as the US Department of Housing and Urban Development, we've compiled a dasbhoard to help potential investors and renters find the ideal marketplace listing price, as well as gain a deeper understanding of the affordable rental market and constraints that disadvantaged indivduals face. 
-                
-    Our belief is that constraint of available units will be further tightened by pressure for short-term rentals. 
-    """)
+#with st.sidebar.expander("Click to learn more about this dashboard"):
+#    st.markdown(f"""
+#    Using data from Inside Airbnb as well as the US Department of Housing and Urban Development, we've compiled a dasbhoard to help potential investors and renters find the ideal marketplace listing price, as well as gain a deeper understanding of the affordable rental market and constraints that disadvantaged indivduals face. 
+#                
+#    Our belief is that constraint of available units will be further tightened by pressure for short-term rentals. 
+#    """)
 
 # Add container for input widgets
-st.markdown("## Input Widget Container")
+st.sidebar.markdown("Model Input Parameters")
+
+sidebar_city = st.sidebar.selectbox(
+    'Select city:',
+    ['columbus','los-angeles', 'new-york-city','fort-worth', 'boston', 'broward-county',
+     'chicago', 'austin', 'seattle', 'rochester', 'san-francisco'],
+)
+
+sidebar_neighborhood = st.sidebar.selectbox(
+    'Select neighborhood:',
+    neighborhoods[sidebar_city],
+)
 
 # 'host_is_superhost'
-host_is_superhost = st.checkbox("Is Superhost?")
+host_is_superhost = st.sidebar.toggle("Is Superhost?", value=1)
 # 'host_listings_count'
-host_listings_count = st.number_input("Host Listings Count", min_value=0)
+host_listings_count = st.sidebar.number_input("Host Listings Count", min_value=0)
 # 'host_total_listings_count'
-host_total_listings_count = st.number_input("Host Total Listings Count", min_value=0)
+host_total_listings_count = st.sidebar.number_input("Host Total Listings Count", min_value=0)
 # 'host_identity_verified'
-host_identity_verified = st.checkbox("Host Identity Verified?")
+host_identity_verified = st.sidebar.toggle("Host Identity Verified?", value=1)
 # 'accommodates'
-accommodates = st.number_input("Accommodates", min_value=0)
+accommodates = st.sidebar.number_input("Accommodates", min_value=0, value =4)
 # 'bathrooms_text'
-bathrooms_text = st.number_input("Bathrooms Text", min_value=0)
+bathrooms_text = st.sidebar.number_input("Number of Bathrooms", min_value=0.0, value = 2.0)
 # 'bedrooms'
-bedrooms = st.number_input("Bedrooms", min_value=0)
+bedrooms = st.sidebar.number_input("Number of Bedrooms", min_value=0, value=2)
 # 'beds'
-beds = st.number_input("Beds", min_value=0)
+beds = st.sidebar.number_input("Number of Beds", min_value=0, value = 3)
 # 'minimum_nights'
-minimum_nights = st.number_input("Minimum Nights", min_value=0)
+minimum_nights = st.sidebar.number_input("Minimum Nights", min_value=0, value = 0)
 # 'maximum_nights'
-maximum_nights = st.number_input("Maximum Nights", min_value=0)
+maximum_nights = st.sidebar.number_input("Maximum Nights", min_value=0, value = 30)
 # 'number_of_reviews'
-number_of_reviews = st.number_input("Number of Reviews", min_value=0)
+number_of_reviews = st.sidebar.number_input("Number of Reviews", min_value=0, value = 10)
 # 'number_of_reviews_ltm'
-number_of_reviews_ltm = st.number_input("Number of Reviews LTM", min_value=0)
+number_of_reviews_ltm = st.sidebar.number_input("Number of Reviews LTM", min_value=0, value = 10)
 # 'number_of_reviews_l30d'
-number_of_reviews_l30d = st.number_input("Number of Reviews L30D", min_value=0)
+number_of_reviews_l30d = st.sidebar.number_input("Number of Reviews L30D", min_value=0, value = 10)
 # 'review_scores_rating'
-review_scores_rating = st.number_input("Review Scores Rating", min_value=0, max_value=100)
+review_scores_rating = st.sidebar.number_input("Review Scores Rating", min_value=0.0, max_value=5.0, value = 4.5)
 # 'review_scores_accuracy'
-review_scores_accuracy = st.number_input("Review Scores Accuracy", min_value=0, max_value=10)
+review_scores_accuracy = st.sidebar.number_input("Review Scores Accuracy", min_value=0.0, max_value=5.0, value = 4.5)
 # 'review_scores_cleanliness'
-review_scores_cleanliness = st.number_input("Review Scores Cleanliness", min_value=0, max_value=10)
+review_scores_cleanliness = st.sidebar.number_input("Review Scores Cleanliness", min_value=0.0, max_value=5.0, value = 4.5)
 # 'review_scores_checkin'
-review_scores_checkin = st.number_input("Review Scores Checkin", min_value=0, max_value=10)
+review_scores_checkin = st.sidebar.number_input("Review Scores Checkin", min_value=0.0, max_value=5.0, value = 4.5)
 # 'review_scores_communication'
-review_scores_communication = st.number_input("Review Scores Communication", min_value=0, max_value=10)
+review_scores_communication = st.sidebar.number_input("Review Scores Communication", min_value=0.0, max_value=5.0, value = 4.5)
 # 'review_scores_location'
-review_scores_location = st.number_input("Review Scores Location", min_value=0, max_value=10)
+review_scores_location = st.sidebar.number_input("Review Scores Location", min_value=0.0, max_value=5.0, value = 4.5)
 # 'review_scores_value'
-review_scores_value = st.number_input("Review Scores Value", min_value=0, max_value=10)
+review_scores_value = st.sidebar.number_input("Review Scores Value", min_value=0.0, max_value=5.0, value = 4.5)
 # 'instant_bookable'
-instant_bookable = st.checkbox("Instant Bookable?")
+instant_bookable = st.sidebar.toggle("Instant Bookable?", value =1)
 # 'reviews_per_month'
-reviews_per_month = st.number_input("Reviews Per Month", min_value=0)
+reviews_per_month = st.sidebar.number_input("Reviews Per Month", min_value=0, value = 5)
 # 'age'
-age = st.number_input("Age", min_value=0)
+age = st.sidebar.number_input("Age", min_value=0, value = 1)
 # room_type
 room_type_options = ['Entire home/apt', 'Private room', 'Shared room']
-room_type = st.selectbox("Room Type", room_type_options)
+room_type = st.sidebar.selectbox("Room Type", room_type_options)
 # ‘property_type
 property_type_options = ['Apartment', 'House', 'Condo', 'Other']
-property_type = st.selectbox("Property Type", property_type_options)
+property_type = st.sidebar.selectbox("Property Type", property_type_options)
+
+# Your existing code...
+
+
 
 # Create tabs
 tabs = st.tabs(["Choropleth", "Neighborhood Stats"])
