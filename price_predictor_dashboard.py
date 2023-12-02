@@ -22,6 +22,10 @@ if _ENABLE_PROFILING:
 
 today = date.today()
 
+column_df = pd.read_pickle('encoded_selected.pkl')
+column_df.drop(columns = ['price'], inplace=True)
+column_lst = column_df.columns.tolist()
+
 def get_neighborhoods(directory):
     cities = [name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))]
     city_dir = {}
@@ -37,6 +41,29 @@ def get_neighborhoods(directory):
 
 directory = 'data'
 neighborhoods = get_neighborhoods(directory)
+
+def extract_property_type(column_list):
+    property_type_list = []
+
+    for string in column_list:
+        if string.startswith("property_type_"):
+            property_type_list.append(string)
+    
+    return property_type_list
+
+property_type_columns = extract_property_type(column_lst)
+
+def property_values_for_dropdown(property_list):
+    
+    type_list = []
+    
+    for property in property_list:
+    
+        property_type_string = "_".join(property.split("_")[2:])
+    
+        type_list.append(property_type_string)
+    
+    return type_list
 
 st.set_page_config(
     page_title="Short-term Rental Pricing Predictor",
@@ -381,7 +408,7 @@ age = st.sidebar.number_input("Age", min_value=0, value = 1)
 room_type_options = ['Entire home/apt', 'Private room', 'Shared room']
 room_type = st.sidebar.selectbox("Room Type", room_type_options)
 # ‘property_type
-property_type_options = ['Apartment', 'House', 'Condo', 'Other']
+property_type_options = property_values_for_dropdown(property_type_columns)
 property_type = st.sidebar.selectbox("Property Type", property_type_options)
 
 # Your existing code...
