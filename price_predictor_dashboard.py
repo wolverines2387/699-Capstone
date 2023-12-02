@@ -65,6 +65,29 @@ def property_values_for_dropdown(property_list):
     
     return type_list
 
+def extract_room_type(column_list):
+    room_type_list = []
+
+    for string in column_list:
+        if string.startswith("room_type_"):
+            room_type_list.append(string)
+    
+    return room_type_list
+
+room_type_columns = extract_room_type(column_lst)
+
+def room_values_for_dropdown(room_list):
+    
+    type_list = ["N/A"]
+    
+    for room in room_list:
+    
+        room_type_string = "".join(room.split("_")[2:])
+    
+        type_list.append(room_type_string)
+    
+    return type_list
+
 st.set_page_config(
     page_title="Short-term Rental Pricing Predictor",
     layout='wide',
@@ -405,7 +428,7 @@ reviews_per_month = st.sidebar.number_input("Reviews Per Month", min_value=0, va
 # 'age'
 age = st.sidebar.number_input("Age", min_value=0, value = 1)
 # room_type
-room_type_options = ['Entire home/apt', 'Private room', 'Shared room']
+room_type_options = room_values_for_dropdown(room_type_columns)
 room_type = st.sidebar.selectbox("Room Type", room_type_options)
 # ‘property_type
 property_type_options = property_values_for_dropdown(property_type_columns)
