@@ -614,7 +614,7 @@ st.sidebar.markdown("Model Input Parameters")
 sidebar_city = st.sidebar.selectbox(
     'Select city:',
     ['columbus','los-angeles', 'new-york-city','fort-worth', 'boston', 'broward-county',
-     'chicago', 'austin', 'seattle', 'rochester', 'san-francisco'],
+     'chicago', 'seattle', 'rochester', 'san-francisco'],
 )
 
 sidebar_neighborhood = st.sidebar.selectbox(
