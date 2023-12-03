@@ -4,6 +4,8 @@ from urllib.request import urlopen
 import time
 import os 
 import altair as alt
+import plotly.express as px
+import plotly.graph_objects as go
 import numpy as np
 import pandas as pd
 import requests
