@@ -625,29 +625,29 @@ sidebar_neighborhood = st.sidebar.selectbox(
 # 'host_is_superhost'
 host_is_superhost = st.sidebar.toggle("Is Superhost?", value=1)
 # 'host_listings_count'
-host_listings_count = st.sidebar.number_input("Host Listings Count", min_value=0)
+host_listings_count = st.sidebar.number_input("Host Listings Count", min_value=1)
 # 'host_total_listings_count'
-host_total_listings_count = st.sidebar.number_input("Host Total Listings Count", min_value=0)
+host_total_listings_count = st.sidebar.number_input("Host Total Listings Count", min_value=1)
 # 'host_identity_verified'
 host_identity_verified = st.sidebar.toggle("Host Identity Verified?", value=1)
 # 'accommodates'
 accommodates = st.sidebar.number_input("Accommodates", min_value=0, value =4)
 # 'bathrooms_text'
-bathrooms_text = st.sidebar.number_input("Number of Bathrooms", min_value=0.0, value = 2.0)
+bathrooms_text = st.sidebar.number_input("Number of Bathrooms", min_value=1.0, value = 2.0)
 # 'bedrooms'
-bedrooms = st.sidebar.number_input("Number of Bedrooms", min_value=0, value=2)
+bedrooms = st.sidebar.number_input("Number of Bedrooms", min_value=1, value=2)
 # 'beds'
-beds = st.sidebar.number_input("Number of Beds", min_value=0, value = 3)
+beds = st.sidebar.number_input("Number of Beds", min_value=1, value = 3)
 # 'minimum_nights'
-minimum_nights = st.sidebar.number_input("Minimum Nights", min_value=0, value = 0)
+minimum_nights = st.sidebar.number_input("Minimum Nights", min_value=1, value = 1)
 # 'maximum_nights'
-maximum_nights = st.sidebar.number_input("Maximum Nights", min_value=0, value = 30)
+maximum_nights = st.sidebar.number_input("Maximum Nights", min_value=1, value = 30)
 # 'number_of_reviews'
-number_of_reviews = st.sidebar.number_input("Number of Reviews", min_value=0, value = 10)
+number_of_reviews = st.sidebar.number_input("Number of Reviews", min_value=0, value = 5)
 # 'number_of_reviews_ltm'
-number_of_reviews_ltm = st.sidebar.number_input("Number of Reviews LTM", min_value=0, value = 10)
+number_of_reviews_ltm = st.sidebar.number_input("Number of Reviews LTM", min_value=0, value = 2)
 # 'number_of_reviews_l30d'
-number_of_reviews_l30d = st.sidebar.number_input("Number of Reviews L30D", min_value=0, value = 10)
+number_of_reviews_l30d = st.sidebar.number_input("Number of Reviews L30D", min_value=0, value = 1)
 # 'review_scores_rating'
 review_scores_rating = st.sidebar.number_input("Review Scores Rating", min_value=0.0, max_value=5.0, value = 4.5)
 # 'review_scores_accuracy'
