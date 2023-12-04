@@ -22,35 +22,42 @@ if not os.path.exists(new_dir):
 
 # Get choropleth_data
 def list_files(directory):
-    return sorted([f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f)) and f != '.DS_Store'])
+    files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+    city_file_pairs = [(f, f.split('_neighborhood_df.pkl')[0]) for f in files]
+    return city_file_pairs
 
 files = list_files('choropleth_data')
 
 
-## Check order of this:
-list_of_cities = sorted(['columbus',
-                  'los-angeles',
-                  'new-york-city',
-                  'fort-worth', 
-                  'boston',
-                  'broward-county',
-                  'chicago',
-                  'austin',
-                  'seattle', 
-                  'rochester',
-                  'san-francisco'])
+agg_neighborhoods_df = pd.DataFrame(columns=['neighborhood','city','total_units','pct_occupied',
+                                             'number_reported','pct_reported','months_since_report',
+                                             'pct_movein', 'people_per_unit','people_total','rent_per_month',
+                                             'spending_per_month', 'hh_income','person_income', 'pct_lt5k',
+                                             'pct_5k_lt10k', 'pct_10k_lt15k','pct_15k_lt20k','pct_ge20k',
+                                             'pct_wage_major','pct_welfare_major','pct_other_major',
+                                             'pct_median','pct_lt50_median','pct_lt30_median',
+                                             'pct_2adults', 'pct_1adult','pct_female_head',
+                                             'pct_female_head_child','pct_disabled_lt62','pct_disabled_ge62',
+                                             'pct_disabled_all','pct_lt24_head','pct_age25_50','pct_age51_61',
+                                             'pct_age62plus','pct_age85plus','pct_minority','pct_black_nonhsp',
+                                             'pct_native_american_nonhsp', 'pct_asian_pacific_nonhsp',
+                                             'pct_white_nothsp', 'pct_black_hsp','pct_wht_hsp','pct_oth_hsp',
+                                             'pct_hispanic','pct_multi','months_waiting', 'months_from_movein',
+                                             'pct_utility_allow','ave_util_allow','pct_bed1','pct_bed2', 'pct_bed3', 
+                                             'pct_overhoused','tpoverty', 'tminority','tpct_ownsfd'])
 
-exploded_df_list = []
 
-for file, city in zip(files,list_of_cities):
+for file, city in files:
     hud_neighborhoods_df = pd.read_pickle('choropleth_data/'+file)
+    hud_neighborhoods_df['city'] = city
 
     hud_neighborhoods_df_exploded = hud_neighborhoods_df.explode('neighborhood')
+    hud_neighborhoods_df_exploded = hud_neighborhoods_df_exploded[pd.notnull(hud_neighborhoods_df_exploded['neighborhood'])]
     hud_neighborhoods_df_exploded = hud_neighborhoods_df_exploded.reset_index(drop=True)
     hud_neighborhoods_df_exploded = hud_neighborhoods_df_exploded[hud_neighborhoods_df_exploded['neighborhood'].notna()]
     
     
-    hud_neighborhoods_df_agg = hud_neighborhoods_df_exploded.groupby('neighborhood').agg({
+    hud_neighborhoods_df_agg = hud_neighborhoods_df_exploded.groupby(['neighborhood','city']).agg({
         'total_units': 'sum',
         'pct_occupied': 'mean',
         'number_reported': 'sum',
@@ -109,14 +116,10 @@ for file, city in zip(files,list_of_cities):
         'tpct_ownsfd'  : 'mean'
     }).reset_index()
     
-    hud_neighborhoods_df_agg['city'] = city
+    agg_neighborhoods_df = pd.concat([agg_neighborhoods_df, hud_neighborhoods_df_agg], ignore_index=True)
     
-    exploded_df_list.append(hud_neighborhoods_df_agg)
-    
-agg_neighborhoods_df = pd.concat(exploded_df_list)
 
 write_file_path = os.path.join(new_dir, 'agg_neighborhood_df.pkl')
 
     # Write the DataFrame to a CSV file
 agg_neighborhoods_df.to_pickle(write_file_path)
-   
