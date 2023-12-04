@@ -25,11 +25,18 @@ if _ENABLE_PROFILING:
 
 today = date.today()
 
+#######################################################################################################################
+# This group cleans and transforms data for the graphs and the dropdowns within the dashboard
+
+# These calls work with the extract_room_type() and extract_property_type() values from the one-hot encoded variables to create the drop downs
 column_df = pd.read_pickle('encoded_selected.pkl')
 column_df.drop(columns = ['price'], inplace=True)
 column_lst = column_df.columns.tolist()
+
+#Loads the pre-trained model to call and predict the optimal property price
 loaded_model = joblib.load('prod_model.pkl')
 
+# Extracts the neighborhoods for the selected cities to be utilized in the drop down for the neighborhoods
 def get_neighborhoods(directory):
     #cities = [name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))]
     cities = ['columbus','los-angeles', 'new-york-city','fort-worth', 'boston', 'broward-county',
@@ -45,9 +52,11 @@ def get_neighborhoods(directory):
     
     return city_dir
 
+# Contains the listings data for each city from Inside Airbnb
 directory = 'data'
 neighborhoods = get_neighborhoods(directory)
 
+# Extracts the property type from the training data one-hot encoded columns to generate the property types for the property dropdown
 def extract_property_type(column_list):
     property_type_list = []
 
@@ -59,6 +68,7 @@ def extract_property_type(column_list):
 
 property_type_columns = extract_property_type(column_lst)
 
+# Converts the extracted property types into a human readable form 
 def property_values_for_dropdown(property_list):
     
     type_list = []
@@ -71,6 +81,7 @@ def property_values_for_dropdown(property_list):
     
     return type_list
 
+#Extracts room type for portal dropdown
 def extract_room_type(column_list):
     room_type_list = []
 
@@ -82,6 +93,7 @@ def extract_room_type(column_list):
 
 room_type_columns = extract_room_type(column_lst)
 
+#Extracts transaltes room types to a human readable form
 def room_values_for_dropdown(room_list):
     
     type_list = ["N/A"]
@@ -94,6 +106,7 @@ def room_values_for_dropdown(room_list):
     
     return type_list
 
+# Transforms the listing data for the model performance graph to show the neighborhood listings
 def transform_listing_data(df):
     columns_to_keep = ['neighborhood_overview', 'neighbourhood', 'neighbourhood_cleansed',
                    'neighbourhood_group_cleansed', 'bedrooms', 'price', 'bathrooms_text', 'instant_bookable']
@@ -104,6 +117,7 @@ def transform_listing_data(df):
     
     return df
 
+# filters the listings dataframe for just the neighborhood data for the model performance graph and introduced model cuttofff parameters
 def filter_neighborhood(df, neighborhood, price_cutoff_upper, price_cutoff_lower):
     
     rslt_df = df[df['neighbourhood_cleansed'].isin(neighborhood)] 
@@ -121,7 +135,7 @@ st.set_page_config(
 )
 
 #################################################################
-#Insert values into the submit df
+#Insert values into the submit_df which goes into the model for predictions for one_hot_encoded property types 
 def update_property_type_submission(submit_df, selected_property_type, property_type_values):
     header = "property_type_"
     
@@ -149,7 +163,8 @@ def update_property_type_submission(submit_df, selected_property_type, property_
         submit_df.loc[0, unselected_property_column] = 0
         
     return submit_df
-        
+
+#Insert values into the submit_df which goes into the model for predictions for one_hot_encoded cities 
 def update_city_submission(submit_df, sidebar_city):
     header = "city_"
     
@@ -176,6 +191,7 @@ def update_city_submission(submit_df, sidebar_city):
         
     return submit_df
 
+#Insert values into the submit_df which goes into the model for predictions for one_hot_encoded neirghborhoods
 def update_neighborhood_submission(submit_df, sidebar_neighborhood, directory):
     neighborhoods = get_neighborhoods(directory)
     
@@ -209,6 +225,7 @@ def update_neighborhood_submission(submit_df, sidebar_neighborhood, directory):
         
     return submit_df.iloc[:, :-11]
 
+#Insert values into the submit_df which goes into the model for predictions for one_hot_encoded room types 
 def update_room_type_submission(submit_df, selected_room_type, room_type_values):
     header = "room_type_"
     
@@ -241,7 +258,7 @@ def update_room_type_submission(submit_df, selected_room_type, room_type_values)
 
 
 ##################################################################
-
+# Create the model results graph
 def model_results_graph(model, dataframe, city, neighborhood, model_value, model_bedrooms, instant_bookable):
     
     model_value = round(model_value,0)
@@ -251,7 +268,7 @@ def model_results_graph(model, dataframe, city, neighborhood, model_value, model
         instant_bookable = 'f'
     
     #Transform and filter listing data
-    graph_listing_df = pd.read_csv('data/'+ city +'/listings.csv.gz')#update this for data/city values
+    graph_listing_df = pd.read_csv('data/'+ city +'/listings.csv.gz')
     transformed_graph_listing_df = transform_listing_data(graph_listing_df)
     filtered_graph_listing_df = filter_neighborhood(transformed_graph_listing_df, [neighborhood], 1000, 40)
     
@@ -283,8 +300,8 @@ def model_results_graph(model, dataframe, city, neighborhood, model_value, model
     trend_model_results.loc[0, 'neighbourhood_cleansed'] = neighborhood
     trend_model_results.loc[0, 'instant_bookable'] = instant_bookable
     
-    ############################################################
-    # Chart creation
+    
+    ### Chart creation
     
     # Configure the options common to all layers
     brush = alt.selection_interval()
@@ -338,21 +355,21 @@ def model_results_graph(model, dataframe, city, neighborhood, model_value, model
     st.altair_chart(final_chart)
 
 
-
-def choropleth(city, neighborhood):
+# Create Choropleth for Affordable Data and GeoJson Data
+def choropleth(city, choro_neighborhood):
     # Get GeoJson File and format
     geo_json_file_path = city_file_path = os.path.join('geojson_data', city, 'neighbourhoods.geojson')
     geo_json = json.load(open(geo_json_file_path))
 
     # Get HUD Data
-    read_path = 'agg_choropleth_data/agg_neighborhood_df.pkl'  # CHANGE THIS IN PERM CODE!
+    read_path = 'agg_choropleth_data/agg_neighborhood_df.pkl' 
     agg_neighborhoods_df = pd.read_pickle(read_path)
 
     agg_neighborhoods_df_city = agg_neighborhoods_df[agg_neighborhoods_df.city == city]
-    agg_neighborhoods_df_city.rename(columns={'total_units': 'Affordable Units Available', 'pct_occupied':
+    agg_neighborhoods_df_city = agg_neighborhoods_df_city.rename(columns={'total_units': 'Affordable Units Available', 'pct_occupied':
                                               '% Affordable Units Occupied', 'rent_per_month': 'Avg Rent Per Month',
-                                              'pct_lt50_median': '% Very Low Income', 'tpoverty': '% In Poverty'},
-                                     inplace=True)
+                                              'pct_lt50_median': '% Very Low Income', 'tpoverty': '% In Poverty'})
+
 
     # Get Lat Lons for City Center
     list_of_cities_lat_lon = sorted([('columbus', 39.9612, -82.9988),
@@ -375,21 +392,21 @@ def choropleth(city, neighborhood):
         # If the first element of the tuple matches the city variable
         if city_lat_lon[0] == city:
             # Assign the matching tuple to the variable
-            matching_tuple = city_lat_lon
+            matching_lat_lon = city_lat_lon
             break  # Exit the loop
 
-    city_center_lat_lons = matching_tuple
+    city_center_lat_lons = matching_lat_lon
     city_center_lat = city_center_lat_lons[1]
     city_center_lon = city_center_lat_lons[2]
 
     # Selected neighborhood
     pin_point_df = pd.read_pickle('pin_point_coordinates.pkl')
     neigh_val = pin_point_df.coordinates[
-        (pin_point_df['city'] == city) & (pin_point_df['neighborhood'] == neighborhood)]
+        (pin_point_df['city'] == city) & (pin_point_df['neighborhood'] == choro_neighborhood)]
     neigh_lat_lons = neigh_val.values
 
     ## Generate Figure
-    hover_text = neighborhood
+    hover_text = choro_neighborhood
 
     # Location Hover Text
     for _, row in agg_neighborhoods_df_city.iterrows():
@@ -405,12 +422,10 @@ def choropleth(city, neighborhood):
                                color_continuous_scale=px.colors.sequential.Oryel,
                                range_color=(0, 100),
                                mapbox_style="carto-positron",
-                               zoom=9, center={"lat": city_center_lat, "lon": city_center_lon},
+                               zoom=10, center={"lat": city_center_lat, "lon": city_center_lon},
                                opacity=0.7,
                                hover_name='% Affordable Units Occupied',
-                               hover_data=['Affordable Units Available', '% Affordable Units Occupied',
-                                           'Avg Rent Per Month',
-                                           '% Very Low Income', '% In Poverty'],
+                               hover_data=['Affordable Units Available', '% Affordable Units Occupied','Avg Rent Per Month','% Very Low Income', '% In Poverty'],
                                title='Neighborhood Affordability Data'
                                )
 
@@ -428,10 +443,10 @@ def choropleth(city, neighborhood):
         text=[hover_text],
         hoverinfo='text'
     ))
-
-    # Use st.plotly_chart to display the figure in Streamlit
+    
     st.plotly_chart(fig)
 
+# Create nerighborhood averages graph to show how the neighborhood data performs across a city
 def get_neighborhood_to_avg(city, city_neighborhood):
     read_path = 'agg_choropleth_data/agg_neighborhood_df.pkl'
 
@@ -600,15 +615,6 @@ Our mission is to create a toolset that will allow owner/operators to predict th
 For additional information please contact *ryanwt@umich.edu* or *moura@umich.edu*.  
 """)
 
-
-
-
-#with st.sidebar.expander("Click to learn more about this dashboard"):
-#    st.markdown(f"""
-#    Using data from Inside Airbnb as well as the US Department of Housing and Urban Development, we've compiled a dasbhoard to help potential investors and renters find the ideal marketplace listing price, as well as gain a deeper understanding of the affordable rental market and constraints that disadvantaged indivduals face. 
-#                
-#    Our belief is that constraint of available units will be further tightened by pressure for short-term rentals. 
-#    """)
 
 # Add container for input widgets
 st.sidebar.markdown("Model Input Parameters")
