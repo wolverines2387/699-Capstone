@@ -59,22 +59,14 @@ def get_df_all_neighborhood(geojson_file, dataframe):
 
 # Get list of geojsons
 def list_files(directory):
-    return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+    files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+    city_file_pairs = [(f, 'new-york-city' if f.split('-neighbourhoods.geojson')[0] == 'new-york' else ('broward-county' if f.split('-neighbourhoods.geojson')[0] == 'broward' else f.split('-neighbourhoods.geojson')[0])) for f in files]
+    return city_file_pairs
+
 
 # Usage
 files = list_files('geo-jsons')
 
-list_of_cities = ['columbus',
-                  'los-angeles',
-                  'new-york-city',
-                  'fort-worth', 
-                  'boston',
-                  'broward-county',
-                  'chicago',
-                  'austin',
-                  'seattle', 
-                  'rochester',
-                  'san-francisco']
 
 # Create a new folder for choropleth dataframes
 new_dir = 'choropleth_data'
@@ -82,9 +74,9 @@ if not os.path.exists(new_dir):
     os.makedirs(new_dir)
 
 # Write dataframes with neighborhoods to folders
-for file, file_name in tqdm(zip(files,list_of_cities)):
+for file, file_name in tqdm(files):
     hud_neighborhoods_df = get_df_all_neighborhood('geo-jsons/'+file, hud_df)
-    write_file_path = os.path.join(new_dir, file_name + 'neighborhood_df.pkl')
+    write_file_path = os.path.join(new_dir, file_name + '_neighborhood_df.pkl')
 
     # Write the DataFrame to a PKL file
     hud_neighborhoods_df.to_pickle(write_file_path)
