@@ -372,17 +372,17 @@ def choropleth(city, choro_neighborhood):
 
 
     # Get Lat Lons for City Center
-    list_of_cities_lat_lon = sorted([('columbus', 39.9612, -82.9988),
-                                      ('los-angeles', 34.0549, -118.2426),
-                                      ('new-york-city', 40.7128, -74.0060),
-                                      ('fort-worth', 32.7555, -97.3308),
-                                      ('boston', 42.3601, -71.0589),
-                                      ('broward-county', 26.1224, -80.1373),
-                                      ('chicago', 41.8781, -87.6232),
-                                      ('austin', 30.2672, -97.7431),
-                                      ('seattle', 47.6061, -122.3328),
-                                      ('rochester', 43.1566, -77.6088),
-                                      ('san-francisco', 37.7749, -122.4194)])
+    list_of_cities_lat_lon = sorted([('columbus', 39.9612, -82.9988, 8.75),
+                                      ('los-angeles', 34.0549, -118.2426, 7.25),
+                                      ('new-york-city', 40.7128, -74.0060, 8.25),
+                                      ('fort-worth', 32.7555, -97.3308, 8.25),
+                                      ('boston', 42.3601, -71.0589, 9.25),
+                                      ('broward-county', 26.1224, -80.1373, 8.25),
+                                      ('chicago', 41.8781, -87.6232, 8.25),
+                                      ('austin', 30.2672, -97.7431, 9.25),
+                                      ('seattle', 47.6061, -122.3328, 9.25),
+                                      ('rochester', 43.1566, -77.6088, 9.25),
+                                      ('san-francisco', 37.7749, -122.4194, 9.25)])
 
     # Initialize the variable to None
     matching_lat_lon = None
@@ -398,6 +398,7 @@ def choropleth(city, choro_neighborhood):
     city_center_lat_lons = matching_lat_lon
     city_center_lat = city_center_lat_lons[1]
     city_center_lon = city_center_lat_lons[2]
+    city_center_zoom = city_center_lat_lons[3]
 
     # Selected neighborhood
     pin_point_df = pd.read_pickle('pin_point_coordinates.pkl')
@@ -420,9 +421,9 @@ def choropleth(city, choro_neighborhood):
                                featureidkey='properties.neighbourhood',
                                color='% Affordable Units Occupied',
                                color_continuous_scale=px.colors.sequential.Oryel,
-                               range_color=(0, 100),
+                               range_color=(50, 100),
                                mapbox_style="carto-positron",
-                               zoom=10, center={"lat": city_center_lat, "lon": city_center_lon},
+                               zoom=city_center_zoom, center={"lat": city_center_lat, "lon": city_center_lon},
                                opacity=0.7,
                                hover_name='% Affordable Units Occupied',
                                hover_data=['Affordable Units Available', '% Affordable Units Occupied','Avg Rent Per Month','% Very Low Income', '% In Poverty'],
