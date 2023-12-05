@@ -40,7 +40,7 @@ loaded_model = joblib.load('prod_model.pkl')
 def get_neighborhoods(directory):
     #cities = [name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))]
     cities = ['columbus','los-angeles', 'new-york-city','fort-worth', 'boston', 'broward-county',
-     'chicago', 'seattle', 'rochester', 'san-francisco']
+     'chicago', 'rochester', 'san-francisco']
     city_dir = {}
     
     for city in cities:
@@ -200,7 +200,7 @@ def update_neighborhood_submission(submit_df, sidebar_neighborhood, directory):
     neighborhood_list = []
     
     city_list = ['columbus','los-angeles', 'new-york-city','fort-worth', 'boston', 'broward-county',
-     'chicago','seattle', 'rochester', 'san-francisco']
+     'chicago', 'rochester', 'san-francisco']
     
     for city in city_list:
         neighborhood_list = neighborhood_list + neighborhoods[city]
@@ -470,7 +470,7 @@ def get_neighborhood_to_avg(city, city_neighborhood):
     for column_value, percentile in zip(neighborhood_percentiles, percentiles):
         value_list = [column_value]
         for column in other_columns:
-            agg_neighborhoods_df_city[column].apply(pd.to_numeric)
+            agg_neighborhoods_df_city[column] = pd.to_numeric(agg_neighborhoods_df_city[column], errors='coerce')
             value = agg_neighborhoods_df_city[column].describe()
             value_list.append(value[percentile])
         agg_neighborhoods_df_city.loc[len(agg_neighborhoods_df_city)]=value_list
@@ -623,7 +623,7 @@ st.sidebar.markdown("Model Input Parameters")
 sidebar_city = st.sidebar.selectbox(
     'Select city:',
     ['columbus','los-angeles', 'new-york-city','fort-worth', 'boston', 'broward-county',
-     'chicago', 'seattle', 'rochester', 'san-francisco'],
+     'chicago', 'rochester', 'san-francisco'],
 )
 
 sidebar_neighborhood = st.sidebar.selectbox(
