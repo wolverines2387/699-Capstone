@@ -7,6 +7,8 @@ import re
 import warnings
 warnings.filterwarnings('ignore')
 
+# This file takes the airbnb listings files and cleans and converts values to numerical, categorical, or one hot encodes data
+
 list_of_cities = sorted(['columbus', 'los-angeles', 'new-york-city', 'fort-worth', 'boston', 'broward-county','chicago','austin','seattle','rochester','san-francisco'])
 
 # recover listints from pickle (create df)
@@ -137,21 +139,11 @@ def get_string_lengths(series):
     series.fillna('-')
     lengths = series.str.len()
     return lengths
-
-# Get lenght of the text field:    
-##for field in ['host_about', 'neighborhood_overview', 'name', 'description']:
-##    df[field] = get_string_lengths(df[field])
-##    df[field] = df[field].fillna(0)
     
 ##---------------------    
 
 def count_lists(series):
     return series.map(lambda x: 0 if eval(x)== None else len(eval(x)))    
-
-
-# Count Items in list:
-#for field in ['amenities', 'host_verifications']:
-#    df[field] = count_lists(df[field])
 
 
 ##---------------------    
