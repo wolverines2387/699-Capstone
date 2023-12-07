@@ -15,7 +15,10 @@ import pgeocode
 import random
 import os
 
-# Create a new folderfor data and see if this pushes correctly
+# This file imports the choropleth data generated in the "convert_hud_zip_to_neighborhood.py" script which takes the zip code from the hud data and correlates it with
+# a neighborhood and aggregates the data from the neihborhood lines.
+
+# Create a new folder for data
 new_dir = 'agg_choropleth_data'
 if not os.path.exists(new_dir):
     os.makedirs(new_dir)
@@ -28,7 +31,7 @@ def list_files(directory):
 
 files = list_files('choropleth_data')
 
-
+# Define agg columns for the new export data frame
 agg_neighborhoods_df = pd.DataFrame(columns=['neighborhood','city','total_units','pct_occupied',
                                              'number_reported','pct_reported','months_since_report',
                                              'pct_movein', 'people_per_unit','people_total','rent_per_month',
@@ -46,7 +49,7 @@ agg_neighborhoods_df = pd.DataFrame(columns=['neighborhood','city','total_units'
                                              'pct_utility_allow','ave_util_allow','pct_bed1','pct_bed2', 'pct_bed3', 
                                              'pct_overhoused','tpoverty', 'tminority','tpct_ownsfd'])
 
-
+# aggregate neighborhood files and introduce a city variable
 for file, city in files:
     hud_neighborhoods_df = pd.read_pickle('choropleth_data/'+file)
     hud_neighborhoods_df['city'] = city
@@ -121,5 +124,5 @@ for file, city in files:
 
 write_file_path = os.path.join(new_dir, 'agg_neighborhood_df.pkl')
 
-    # Write the DataFrame to a CSV file
+    # Write to a pickle file
 agg_neighborhoods_df.to_pickle(write_file_path)
