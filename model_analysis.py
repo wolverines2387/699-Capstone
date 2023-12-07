@@ -24,6 +24,8 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 import numpy as np
 
+### Creates visual analysis for modesl for r2 results
+
 #### Recover trimmed_listings_cleased file returning the previously consolidated and cleased dataset
 combined_results = pd.read_pickle('cv_and_test_size_gridsearch.pkl')
 
