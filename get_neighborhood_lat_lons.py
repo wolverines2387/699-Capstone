@@ -4,12 +4,21 @@ import os
 import json
 from shapely.geometry import shape
 
-directory = 'geojson_data'
+# File finds neighborhood centers for selected neighborhood views in choropleth
+
+directory = 'geo-jsons'
 cities = [name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))]
 pin_point_df = pd.DataFrame()
 
-for city in cities:
-    geo_json_file_path = city_file_path = os.path.join('geojson_data', city,'neighbourhoods.geojson')
+def list_files(directory):
+    files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+    city_file_pairs = [(f, 'new-york-city' if f.split('-neighbourhoods.geojson')[0] == 'new-york' else ('broward-county' if f.split('-neighbourhoods.geojson')[0] == 'broward' else f.split('-neighbourhoods.geojson')[0])) for f in files]
+    return city_file_pairs
+
+files = list_files('geo-jsons')
+
+for file, city in files:
+    geo_json_file_path = os.path.join('geo-jsons', file)
     geo_json = json.load(open(geo_json_file_path))
     
     neighborhoods = []
