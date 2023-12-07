@@ -10,6 +10,8 @@ import lightgbm as lgb
 from sklearn.dummy import DummyRegressor
 import joblib
 
+# Creates the prod model pkl file to call within the dashboard for pricing
+
 df_encoded_selected= pd.read_pickle('encoded_selected.pkl')
  
 
