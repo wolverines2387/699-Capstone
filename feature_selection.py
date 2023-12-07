@@ -24,6 +24,9 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 import numpy as np
 
+# This script runs a selection of 50k models to identify the optimal feature set when moving towards the final production model
+# WARNING: RE-RUNING THIS FILE CAN TAKE UPWARDS OF 30 HOURS
+
 #### Recover trimmed_listings_cleased file returning the previously consolidated and cleased dataset
 trimmed_listings = pd.read_pickle('trimmed_listings_cleased.pkl')
 
