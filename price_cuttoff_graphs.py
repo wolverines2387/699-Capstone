@@ -24,6 +24,8 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 import numpy as np
 
+# Generates graphs for cutoff analysis visual
+
 ## Get Cuttoff Models from outlier_directory
 df_cutoff = pd.read_pickle('outlier_analysis' +'/full_results.pkl')
 
