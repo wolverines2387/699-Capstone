@@ -13,6 +13,8 @@ from tqdm import tqdm
 import pgeocode
 import random
 
+## Imports HUD data and does some light transformation to get lat/lons from zip codes
+
 tqdm.pandas()
 
 ## Import HUD from xlsx
