@@ -24,6 +24,8 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 import numpy as np
 
+# Generates the models for price cuttoff evaluations
+
 ### Recover trimmed_listings_cleased file returning the previously consolidated and cleased dataset.
 trimmed_listings = pd.read_pickle('trimmed_listings_cleased.pkl')
 
