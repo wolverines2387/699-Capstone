@@ -15,6 +15,8 @@ import pgeocode
 import random
 import os
 
+# This file takes the HUD data and converts the zip code to a set of neighborhoods for analysis alongside the geojson data.
+
 # Import Lat Lon Hud DF from pkl
 read_file_path = 'hud_lat_lon_multiple.pkl'
 hud_df = pd.read_pickle(read_file_path)
@@ -30,7 +32,7 @@ def get_df_all_neighborhood(geojson_file, dataframe):
         coordinate_list = []
 
         for lat, lon in coordinates_list:
-            point = Point(lon, lat)  # Note the order of longitude and latitude here
+            point = Point(lon, lat) 
             found = False
 
             for index, row in gdf.iterrows():
@@ -64,7 +66,6 @@ def list_files(directory):
     return city_file_pairs
 
 
-# Usage
 files = list_files('geo-jsons')
 
 
@@ -78,5 +79,5 @@ for file, file_name in tqdm(files):
     hud_neighborhoods_df = get_df_all_neighborhood('geo-jsons/'+file, hud_df)
     write_file_path = os.path.join(new_dir, file_name + '_neighborhood_df.pkl')
 
-    # Write the DataFrame to a PKL file
+    # Write to a PKL file
     hud_neighborhoods_df.to_pickle(write_file_path)
