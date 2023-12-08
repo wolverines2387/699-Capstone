@@ -53,13 +53,14 @@ def run_lgbm_regression(df, estimators_list, learning_rates_list, target_col):
             model = lgb.train(params, train_data, valid_sets=[val_data])
             #model = lgb.train(params, train_data, num_boost_round=10000, valid_sets=[val_data], early_stopping_round=10)
             
-            return model
+            return model, scaler
         
-results = run_lgbm_regression(df_encoded_selected, [1000], 
+results, scaler = run_lgbm_regression(df_encoded_selected, [1000], 
                               [0.1], target_col='price')
 
 
 
 # Save the model
 joblib.dump(results, 'prod_model.pkl')
-
+# Save the scaler
+joblib.dump(scaler, 'prod_scaler.pkl')

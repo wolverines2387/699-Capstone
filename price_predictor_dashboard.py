@@ -12,6 +12,7 @@ import requests
 import streamlit as st
 import streamlit.components.v1 as components
 import joblib
+import re
 ## No longer need this with this version of python
 #from pandas.io.json import json_normalize
 
@@ -176,6 +177,8 @@ def update_city_submission(submit_df, sidebar_city):
     un_selected_city_values.remove(sidebar_city)
     
     #Insert dummy for selected property type
+
+    selected_city_column = header + sidebar_city.replace('-', '')
     
     selected_city_column = header + sidebar_city
     
@@ -184,6 +187,8 @@ def update_city_submission(submit_df, sidebar_city):
     #Insert dummy for unselected property types
     
     for unselected_city in un_selected_city_values:
+
+        unselected_city_column = header + unselected_city.replace('-', '')
 
         unselected_city_column = header + unselected_city
 
@@ -716,7 +721,12 @@ submit_df.loc[0, 'age'] = age
 submit_df = update_room_type_submission(submit_df, room_type, room_type_options)
 submit_df = update_property_type_submission(submit_df, property_type, property_type_options)
 submit_df = submit_df.apply(pd.to_numeric, errors='ignore')
-predictions = loaded_model.predict(submit_df)
+
+scaler = joblib.load('prod_scaler.pkl')
+submit_df = submit_df.rename(columns=lambda x: re.sub(r'[^A-Za-z0-9_]', '', x.replace(' ', '_').replace('/', '')))
+scaled_submit_df = pd.DataFrame(scaler.transform(submit_df), columns=submit_df.columns)
+
+predictions = loaded_model.predict(scaled_submit_df)
 prediction_val = round(predictions[0],2)
 text_prediciton_val = "Your estimated nightly rental value is $"+str(prediction_val)
 
@@ -730,7 +740,7 @@ if regenerate_button:
     # Check which tab is selected
     if selected_tab == "Model Results":
         # Display the model results graph
-        model_results_graph(loaded_model, submit_df, sidebar_city, sidebar_neighborhood, prediction_val, bedrooms, instant_bookable)
+        model_results_graph(loaded_model, scaled_submit_df, sidebar_city, sidebar_neighborhood, prediction_val, bedrooms, instant_bookable)
     elif selected_tab == "Choropleth":
         # Display the choropleth graph
         choropleth(sidebar_city, sidebar_neighborhood)
@@ -741,7 +751,7 @@ if regenerate_button:
 # Check which tab is selected (outside the "if regenerate_button" block)
 if selected_tab == "Model Results":
     # Display the model results graph
-    model_results_graph(loaded_model, submit_df, sidebar_city, sidebar_neighborhood, prediction_val, bedrooms, instant_bookable)
+    model_results_graph(loaded_model, scaled_submit_df, sidebar_city, sidebar_neighborhood, prediction_val, bedrooms, instant_bookable)
 elif selected_tab == "Choropleth":
     # Display the choropleth graph
     choropleth(sidebar_city, sidebar_neighborhood)
