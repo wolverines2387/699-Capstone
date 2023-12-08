@@ -283,9 +283,11 @@ def model_results_graph(model, dataframe, city, neighborhood, model_value, model
     
     for bedroom in bedroom_count:
         dataframe_copy = dataframe.copy()
-        dataframe_copy.loc[0, 'bedrooms'] = bedroom
-        
         dataframe_copy = dataframe_copy.apply(pd.to_numeric, errors='ignore')
+        dataframe_copy.loc[0, 'bedrooms'] = bedroom
+        scaler = joblib.load('prod_scaler.pkl')
+        dataframe_copy = dataframe_copy.rename(columns=lambda x: re.sub(r'[^A-Za-z0-9_]', '', x.replace(' ', '_').replace('/', '')))
+        dataframe_copy = pd.DataFrame(scaler.transform(dataframe_copy), columns=dataframe_copy.columns)
         
         chart_prediction = model.predict(dataframe_copy)
         chart_prediction = chart_prediction[0]
@@ -687,7 +689,7 @@ room_type_options = room_values_for_dropdown(room_type_columns)
 room_type = st.sidebar.selectbox("Room Type", room_type_options)
 # ‘property_type
 property_type_options = property_values_for_dropdown(property_type_columns)
-property_type = st.sidebar.selectbox("Property Type", property_type_options)
+property_type = st.sidebar.selectbox("Property Type", property_type_options, index = 18)
 
 regenerate_button = st.sidebar.button("Regenerate Graphs")
 
@@ -740,7 +742,7 @@ if regenerate_button:
     # Check which tab is selected
     if selected_tab == "Model Results":
         # Display the model results graph
-        model_results_graph(loaded_model, scaled_submit_df, sidebar_city, sidebar_neighborhood, prediction_val, bedrooms, instant_bookable)
+        model_results_graph(loaded_model, submit_df, sidebar_city, sidebar_neighborhood, prediction_val, bedrooms, instant_bookable)
     elif selected_tab == "Choropleth":
         # Display the choropleth graph
         choropleth(sidebar_city, sidebar_neighborhood)
@@ -751,7 +753,7 @@ if regenerate_button:
 # Check which tab is selected (outside the "if regenerate_button" block)
 if selected_tab == "Model Results":
     # Display the model results graph
-    model_results_graph(loaded_model, scaled_submit_df, sidebar_city, sidebar_neighborhood, prediction_val, bedrooms, instant_bookable)
+    model_results_graph(loaded_model, submit_df, sidebar_city, sidebar_neighborhood, prediction_val, bedrooms, instant_bookable)
 elif selected_tab == "Choropleth":
     # Display the choropleth graph
     choropleth(sidebar_city, sidebar_neighborhood)
